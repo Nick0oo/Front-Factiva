@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export default function Header() {
+export default function HeaderLogin() {
   return (
     <header className="w-full bg-header text-foreground shadow-md">
       <div className="container mx-auto flex items-center justify-between py-4 px-3">
@@ -14,7 +14,7 @@ export default function Header() {
         {/* Navigation */}
         <nav className="flex space-x-12 font-semibold ml-auto text-gray-300">
           <Link
-            href="#home"
+            href="/"
             className="relative hover:text-white hover:bg-gray-500/20 hover:rounded-full transition-all px-4 py-2"
           >
             Inicio
