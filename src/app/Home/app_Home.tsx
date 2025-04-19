@@ -1,17 +1,24 @@
-import Footer from '@/app/Home/footer'; // Asegúrate de que el componente esté exportado con default
-import Header from '@/app/Home/header'; // Asegúrate de que el componente esté exportado con default
-import ContentSection from '@/app/Home/content'; // Asegúrate de que el componente esté exportado con default
+import Footer from '@/app/Home/footer';
+import Features from '@/components/features-2';
+import Pricing from '@/components/pricing';
+import HeroSection from '@/components/hero-section';
+import FAQsTwo from '@/components/faqs-2';
 
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Header */}
-      <Header />
-
       {/* Main Content */}
       <div className="flex-grow flex flex-col justify-start px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8">
-        {/* Aquí puedes agregar contenido adicional si es necesario */}
-        <ContentSection />
+        <HeroSection />
+        <section id="features">
+          <Features />
+        </section>
+        <section id="pricing">
+          <Pricing />
+        </section>
+        <section id="faqs">
+          <FAQsTwo />
+        </section>
       </div>
 
       {/* Footer */}
