@@ -1,6 +1,6 @@
 import { FileText } from "lucide-react"
 
-import { LoginForm } from "@/components/login-form"
+import { LoginForm } from "@/app/Login/login-form"
 
 export default function LoginPage() {
   return (
