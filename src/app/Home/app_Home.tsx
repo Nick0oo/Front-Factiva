@@ -1,8 +1,8 @@
 import Footer from '@/app/Home/footer';
-import Features from '@/components/features-2';
-import Pricing from '@/components/pricing';
-import HeroSection from '@/components/hero-section';
-import FAQsTwo from '@/components/faqs-2';
+import Features from '@/app/Home/features-2';
+import Pricing from '@/app/Home/pricing';
+import HeroSection from '@/app/Home/hero-section';
+import FAQsTwo from '@/app/Home/faqs-2';
 
 export default function Home() {
   return (

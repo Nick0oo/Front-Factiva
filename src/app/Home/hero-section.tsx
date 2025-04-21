@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import { TextEffect } from '@/components/ui/text-effect'
 import { AnimatedGroup } from '@/components/ui/animated-group'
-import { HeroHeader } from '@/components/hero5-header'
+import { HeroHeader } from '@/app/Home/hero5-header'
 
 const transitionVariants = {
     item: {
