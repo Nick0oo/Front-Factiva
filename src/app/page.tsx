@@ -1,7 +1,10 @@
-import Image from "next/image";
+import AppHome from './Home/app_Home'; // Renombramos el import
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <h1>Vacio pa interar con los springs</h1>
+    
+    <main >
+      <AppHome />
+    </main>
   );
 }
