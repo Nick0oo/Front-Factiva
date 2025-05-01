@@ -21,7 +21,7 @@ export default function DashboardLayout({
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
-      router.push("/login");
+      router.push("/Login");
     }
   }, [router]);
 
