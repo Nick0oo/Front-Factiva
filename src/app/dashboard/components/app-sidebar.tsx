@@ -2,34 +2,29 @@
 
 import * as React from "react"
 import {
-  IconCamera,
   IconDashboard,
   IconFileAi,
   IconFolder,
   IconHelp,
   IconInnerShadowTop,
   IconSearch,
-  IconSettings,
 } from "@tabler/icons-react"
 
 import { NavMain } from "@/app/dashboard/components/nav-main"
-import { NavSecondary } from "@/app/dashboard/components/nav-secondary"
 import { NavUser } from "@/app/dashboard/components/nav-user"
+import { SettingsDialog } from "@/app/dashboard/components/sibebar/settings-dialog"
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuButton,
 } from "@/components/ui/sidebar"
 
 const data = {
-  user: {
-    name: "Nicko",
-    role: "Admin",
-  },
+  user: { name: "Nicko", role: "Admin" },
   navMain: [
     {
       title: "Principal",
@@ -44,48 +39,26 @@ const data = {
     {
       title: "Automatización",
       url: "#",
-      icon:  IconFileAi,
+      icon: IconFileAi,
     },
     {
       title: "Plantillas",
       url: "#",
       icon: IconFolder,
     },
-
-  ],
-  navClouds: [
-    {
-      title: "Capture",
-      icon: IconCamera,
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
   ],
   navSecondary: [
-    {
-      title: "Settings",
-      url: "#",
-      icon: IconSettings,
-    },
-    {
-      title: "Get Help",
-      url: "#",
-      icon: IconHelp,
-    },
+    { title: "Get Help", url: "#", icon: IconHelp },
   ],
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
+  // Creamos un sólo array con Settings primero
+  const secondaryItems = [
+    { type: "settings" as const },
+    ...data.navSecondary.map((item) => ({ type: "link" as const, ...item })),
+  ]
+
   return (
     <Sidebar {...props}>
       <SidebarHeader>
@@ -103,10 +76,30 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
+
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+
+        <SidebarMenu className="mt-auto space-y-1">
+          {secondaryItems.map((item) => (
+            <SidebarMenuItem
+              key={item.type === "settings" ? "settings" : item.title}
+            >
+              {item.type === "settings" ? (
+                <SettingsDialog />
+              ) : (
+                <SidebarMenuButton asChild>
+                  <a href={item.url}>
+                    <item.icon className="!size-5" />
+                    <span>{item.title}</span>
+                  </a>
+                </SidebarMenuButton>
+              )}
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
       </SidebarContent>
+
       <SidebarFooter>
         <NavUser user={data.user} />
       </SidebarFooter>
