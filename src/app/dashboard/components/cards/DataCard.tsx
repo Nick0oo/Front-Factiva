@@ -50,48 +50,19 @@ export function DataCard({ item, onView, onEdit, onDelete }: DataCardProps) {
   return (
     <Card className="w-full">
       <CardHeader className="flex justify-between items-center">
-        <span className="text-gray-300 font-medium text-sm">{item.id}</span>
-        <Badge
-          variant="outline"
-          className={cn("text-sm font-medium border-none", getStatusColor(item.status))}
-        >
-          <span className="flex items-center gap-1">
-            {statusIcon} {item.status}
-          </span>
+        <h3 className="text-lg font-semibold">{item.code}</h3>
+        <Badge className={cn(getStatusColor(item.status))}>
+          {item.status}
         </Badge>
       </CardHeader>
-
-      <CardContent className="space-y-4">
-        <h3 className="text-white text-2xl font-bold">
-          {item.amount ? formatCurrency(item.amount) : "$0"}
-        </h3>
-        <div className="flex justify-between text-gray-400 text-sm">
-          <span>{item.company || "Sin empresa"}</span>
-          <span>{item.date || new Date().toISOString().split("T")[0]}</span>
-        </div>
+      <CardContent className="space-y-2">
+        <p className="text-sm text-muted-foreground">{item.company}</p>
+        <p className="text-xl font-medium">{formatCurrency(item.amount)}</p>
+        <p className="text-xs text-muted-foreground">{item.date}</p>
       </CardContent>
-
-      <CardFooter className="flex justify-between">
-        <button
-          className="text-gray-400 hover:text-white transition-colors"
-          onClick={() => onView(item)}
-        >
-          <IconEye size={16}/>
-        </button>
-        {onEdit && (
-          <button
-            className="text-gray-400 hover:text-white transition-colors"
-            onClick={() => onEdit(item)}
-          >
-            <IconEdit2 size={16}/>
-          </button>
-        )}
-        <button
-          className="text-gray-400 hover:text-white transition-colors"
-          onClick={() => onDelete(item)}
-        >
-          <IconTrash size={16}/>
-        </button>
+      <CardFooter className="flex justify-end gap-2">
+        <IconEye className="cursor-pointer" onClick={() => onView(item)} size={16}/>
+        <IconTrash className="cursor-pointer" onClick={() => onDelete(item)} size={16}/>
       </CardFooter>
     </Card>
   )

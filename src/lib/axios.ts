@@ -1,11 +1,12 @@
+// filepath: src/lib/axios.ts
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL, // ej: http://localhost:3001
+  baseURL: process.env.NEXT_PUBLIC_API_URL, 
 });
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");  // o donde guardes tu JWT
+  const token = localStorage.getItem("token");  
   if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`;
   }

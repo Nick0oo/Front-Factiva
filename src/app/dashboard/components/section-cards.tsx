@@ -10,33 +10,37 @@ interface JWTPayload { sub: string }
 export function SectionCards() {
   const [stats, setStats] = useState({
     totalInvoices: 0,
-    paidCount: 0,
-    pendingCount: 0,
-    totalRevenue: 0
+    paidCount:     0,
+    pendingCount:  0,
+    errorCount:    0
   })
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string>()
+  const [error, setError]     = useState<string>()
 
   useEffect(() => {
     async function fetchStats() {
       try {
         const token = localStorage.getItem("token")
         if (!token) throw new Error("No estás logueado")
-        // extraemos el userId:
         const { sub: userId } = jwtDecode<JWTPayload>(token)
 
-        const [ totalRes, paidRes, pendingRes, revenueRes ] = await Promise.all([
+        const [
+          totalRes,
+          completedRes,
+          pendingRes,
+          errorRes
+        ] = await Promise.all([
           api.get<number>(`/invoice/user/${userId}/count`),
-          api.get<number>(`/invoice/user/${userId}/status/paid/count`),
+          api.get<number>(`/invoice/user/${userId}/status/completed/count`),
           api.get<number>(`/invoice/user/${userId}/status/pending/count`),
-          api.get<number>(`/invoice/user/${userId}/total`)
+          api.get<number>(`/invoice/user/${userId}/status/error/count`)
         ])
 
         setStats({
           totalInvoices: totalRes.data,
-          paidCount:   paidRes.data,
-          pendingCount:pendingRes.data,
-          totalRevenue:revenueRes.data
+          paidCount:     completedRes.data,
+          pendingCount:  pendingRes.data,
+          errorCount:    errorRes.data
         })
       } catch (err: any) {
         setError(err.response?.data?.message || err.message)
@@ -52,33 +56,37 @@ export function SectionCards() {
 
   const configs = [
     {
-      title: "Total de facturas",
-      value: stats.totalInvoices,
-      change: 0, trend: "up",
-      footerTitle: "Facturas emitidas",
-      footerSubtitle: "Total de registros",
+      title:          "Total de facturas",
+      value:          stats.totalInvoices,
+      change:         0,
+      trend:          "up",
+      footerTitle:    "Facturas emitidas",
+      footerSubtitle: "Total de registros"
     },
     {
-      title: "Facturas pagadas",
-      value: stats.paidCount,
-      change: 0, trend: "up",
-      footerTitle: "Estado completado",
-      footerSubtitle: "Clientes cumplidos",
+      title:          "Facturas completadas",
+      value:          stats.paidCount,
+      change:         0,
+      trend:          "up",
+      footerTitle:    "Estado completado",
+      footerSubtitle: "Clientes cumplidos"
     },
     {
-      title: "Facturas pendientes",
-      value: stats.pendingCount,
-      change: 0, trend: "down",
-      footerTitle: "Requiere seguimiento",
-      footerSubtitle: "Acciones pendientes",
+      title:          "Facturas pendientes",
+      value:          stats.pendingCount,
+      change:         0,
+      trend:          "down",
+      footerTitle:    "Requiere seguimiento",
+      footerSubtitle: "Acciones pendientes"
     },
     {
-      title: "Total recaudado",
-      value: `$${stats.totalRevenue}`,
-      change: 0, trend: "up",
-      footerTitle: "Ingresos totales",
-      footerSubtitle: "Suma de todas las facturas",
-    },
+      title:          "Facturas con error",
+      value:          stats.errorCount,
+      change:         0,
+      trend:          "down",
+      footerTitle:    "Estado error",
+      footerSubtitle: "Revisión necesaria"
+    }
   ]
 
   return (
