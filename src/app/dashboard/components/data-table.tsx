@@ -1,87 +1,126 @@
 "use client"
-import * as React from "react"
-import { useRouter } from "next/navigation"
-import { mockData } from "@/app/dashboard/components/data-table/mockData"
-import { DataCard } from "@/app/dashboard/components/cards/DataCard"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
-import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight } from "@tabler/icons-react"
 
-// Tipo inferido de DataItem a partir de mockData
-type DataItem = typeof mockData[number]
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import api from "@/lib/axios"
+import { jwtDecode } from "jwt-decode"
+import { z } from "zod"
+import { DataCard } from "@/app/dashboard/components/cards/DataCard"
+import { Button } from "@/components/ui/button"
+
+// — actualizamos el schema:
+export const schema = z.object({
+  id: z.string(),
+  code: z.string(),             // <-- nuevo
+  status: z.union([
+    z.literal("Done"),
+    z.literal("In Progress"),
+    z.literal("Cancelled")
+  ]),
+  amount: z.number(),
+  company: z.string(),
+  date: z.string()
+})
+type DataItem = z.infer<typeof schema>
+
+// Factura “bruta” viene con receiverName opcional
+interface InvoiceItem {
+  _id: string;
+  receiverName?: string;
+  status: "pending" | "completed" | "error";
+  totalAmount: number;
+  createdAt: string;
+}
+
+interface JWTPayload { sub: string }
 
 export function DataTable() {
   const router = useRouter()
+  const [data, setData] = useState<DataItem[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  // Inicializar datos simulados o array vacío para evitar errores
-  const [data, setData] = React.useState<DataItem[]>(() => Array.isArray(mockData) ? mockData : [])
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true); setError(null)
+      try {
+        const token = localStorage.getItem("token")
+        if (!token) throw new Error("No estás logueado")
+        const { sub: userId } = jwtDecode<JWTPayload>(token)
 
-  // React.useEffect(() => {
-  //   fetch('/api/data')
-  //     .then(res => res.json())
-  //     .then(json => setData(json))
-  // }, [])
+        const res = await api.get<InvoiceItem[]>(`/invoice/user/${userId}`)
+        console.log("raw invoices:", res.data)
+        const ult4 = res.data
+          .sort((a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          )
+          .slice(0, 4)
 
-  const [search, setSearch] = React.useState("")
-  const [pageSize, setPageSize] = React.useState(4)
-  const [page, setPage] = React.useState(1)
+        // mapeamos al shape de DataCard, generando code “FacN1”, “FacN2”…
+        const mapped: DataItem[] = ult4.map((inv, idx) => {
+          // si recibes un string → muéstralo; si recibes obj con name → úsalo
+          const companyName = inv.receiverName || "Cliente desconocido"
 
-  // Filtrado
-  const handleViewAll = () => {
-    // Simular redirección
-    console.log("Redirecting to view all...");
+          return {
+            id: inv._id,
+            code: `FacN${idx+1}`,
+            status:
+              inv.status === "completed" ? "Done" :
+              inv.status === "pending"   ? "In Progress" :
+                                          "Cancelled",
+            amount: inv.totalAmount,
+            company: companyName,
+            date: inv.createdAt.split("T")[0]
+          }
+        })
+
+        setData(mapped)
+      } catch (err: any) {
+        console.error(err)
+        setError(err.response?.data?.message || err.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  const handleView = (item: DataItem) => router.push(`/dashboard/invoices/${item.id}`)
+  const handleDelete = async (item: DataItem) => {
+    setLoading(true); setError(null)
+    try {
+      await api.delete(`/invoice/${item.id}`)
+      setData(prev => prev.filter(d => d.id !== item.id))
+    } catch (err: any) {
+      console.error(err)
+      setError(err.response?.data?.message || err.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
-  // Handlers
-  const handleView = (item: DataItem) => {
-    // Simular acción de ver detalles
-    console.log('View', item)
-  }
-  const handleDelete = (item: DataItem) => {
-    // Simular borrado con API comentado
-    // fetch(`/api/delete/${item.id}`, { method: 'DELETE' })
-    setData(prev => prev.filter(d => d.id !== item.id))
-  }
+  if (loading && !data.length) return <p className="p-4 text-center">Cargando últimas facturas…</p>
+  if (error) return <p className="p-4 text-center text-red-500">{error}</p>
+  if (!loading && !data.length) return <p className="p-4 text-center">No hay facturas recientes.</p>
 
   return (
     <div className="p-4 md:p-6 lg:p-8">
       <div className="flex flex-col gap-6">
-
-        {/* Botón Ver Todo */}
         <div className="flex justify-end">
-          <Button onClick={() => router.push("/ruta-destino")} variant="outline">
+          <Button onClick={() => router.push("/dashboard/invoices")} variant="outline">
             Ver todo
           </Button>
         </div>
-
-        {/* Grid de tarjetas */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {data.map(item => (
             <DataCard
               key={item.id}
               item={item}
-              onView={() => console.log("View", item)}
-              onDelete={() => {/*…*/}}
+              onView={handleView}
+              onDelete={handleDelete}
             />
           ))}
-        </div>
-
-        {/* Paginación */}
-        <div className="flex items-center justify-center gap-2">
-          <Button size="icon" variant="outline" onClick={() => setPage(1)} disabled={page === 1}>
-            <IconChevronsLeft />
-          </Button>
-          <Button size="icon" variant="outline" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>
-            <IconChevronLeft />
-          </Button>
-          <span className="px-2">Page {page} of {Math.ceil(data.length / pageSize)}</span>
-          <Button size="icon" variant="outline" onClick={() => setPage(p => Math.min(Math.ceil(data.length / pageSize), p + 1))} disabled={page === Math.ceil(data.length / pageSize)}>
-            <IconChevronRight />
-          </Button>
-          <Button size="icon" variant="outline" onClick={() => setPage(Math.ceil(data.length / pageSize))} disabled={page === Math.ceil(data.length / pageSize)}>
-            <IconChevronsRight />
-          </Button>
         </div>
       </div>
     </div>
