@@ -14,8 +14,9 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import axios from "axios";
-import { Eye, EyeOff, Lock, User } from "lucide-react"; // Importamos los íconos necesarios
+// --- sustituye axios por tu instancia preconfigurada ---
+import api from "@/lib/axios";
+import { Eye, EyeOff, Lock, User } from "lucide-react";
 
 export function LoginForm({
   className,
@@ -36,43 +37,38 @@ export function LoginForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-
     console.log("Datos enviados al backend:", formData);
 
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
+      const response = await api.post<{ accessToken: string }>(
+        "/auth/login",
         {
           email: formData.email,
           password: formData.password,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
         }
       );
 
-      console.log("Respuesta del backend:", response.data); // Verifica aquí si la respuesta tiene los tokens
-
-      console.log("response.status:", response.status);
-      console.log("response.data:", response.data);
-      console.log("accessToken existe:", !!response.data.accessToken);
+      console.log("Respuesta del backend:", response.data);
 
       if (
-        (response?.status === 200 || response?.status === 201) &&
-        response.data?.accessToken
+        (response.status === 200 || response.status === 201) &&
+        response.data.accessToken
       ) {
+        // guardamos token
         localStorage.setItem("token", response.data.accessToken);
         console.log("Token guardado:", response.data.accessToken);
+
+        // opcional: añadir token al header por defecto de api
+        api.defaults.headers.common.Authorization = `Bearer ${response.data.accessToken}`;
+
         router.push("/dashboard");
       } else {
         console.warn("No se recibió el token esperado en el backend.");
         setError("No se recibió el token del backend");
       }
     } catch (err: unknown) {
-      console.error("Error en la solicitud:", err); // Log para depurar
-      if (axios.isAxiosError(err) && err.response) {
+      console.error("Error en la solicitud:", err);
+      if (api.isAxiosError?.(err) && err.response) {
         setError(err.response.data?.message || "Invalid email or password");
       } else {
         setError("An unexpected error occurred");
