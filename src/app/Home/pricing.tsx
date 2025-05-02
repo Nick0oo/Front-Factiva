@@ -8,20 +8,20 @@ export default function Pricing() {
         <section className="py-16 md:py-32">
             <div className="mx-auto max-w-6xl px-6">
                 <div className="mx-auto max-w-2xl space-y-6 text-center">
-                    <h1 className="text-center text-4xl font-semibold lg:text-5xl">Pricing that Scales with You</h1>
-                    <p>Gemini is evolving to be more than just the models. It supports an entire to the APIs and platforms helping developers and businesses innovate.</p>
+                    <h1 className="text-center text-4xl font-semibold lg:text-5xl">Precios accesibles contigo</h1>
+                    <p>Una herramienta más que un producto. Cobertura con APIs de facturación ayudando a las empresas.</p>
                 </div>
 
                 <div className="mt-8 grid gap-6 md:mt-20 md:grid-cols-3">
                     <Card>
                         <CardHeader>
-                            <CardTitle className="font-medium">Free</CardTitle>
+                            <CardTitle className="font-medium">Básico</CardTitle>
 
-                            <span className="my-3 block text-2xl font-semibold">$0 / mo</span>
+                            <span className="my-3 block text-2xl font-semibold">$60 / mes</span>
 
-                            <CardDescription className="text-sm">Per editor</CardDescription>
+                            <CardDescription className="text-sm"></CardDescription>
                             <Button asChild variant="outline" className="mt-4 w-full">
-                                <Link href="">Get Started</Link>
+                                <Link href="">Comprar ahora</Link>
                             </Button>
                         </CardHeader>
 
@@ -29,7 +29,7 @@ export default function Pricing() {
                             <hr className="border-dashed" />
 
                             <ul className="list-outside space-y-3 text-sm">
-                                {['Basic Analytics Dashboard', '5GB Cloud Storage', 'Email and Chat Support'].map((item, index) => (
+                                {['Dashboard básico y Analitics', '1,000 facturas', 'Correo electrónico de soporte'].map((item, index) => (
                                     <li key={index} className="flex items-center gap-2">
                                         <Check className="size-3" />
                                         {item}
@@ -43,14 +43,14 @@ export default function Pricing() {
                         <span className="bg-linear-to-br/increasing absolute inset-x-0 -top-3 mx-auto flex h-6 w-fit items-center rounded-full from-purple-400 to-amber-300 px-3 py-1 text-xs font-medium text-amber-950 ring-1 ring-inset ring-white/20 ring-offset-1 ring-offset-gray-950/5">Popular</span>
 
                         <CardHeader>
-                            <CardTitle className="font-medium">Pro</CardTitle>
+                            <CardTitle className="font-medium">Profesional</CardTitle>
 
-                            <span className="my-3 block text-2xl font-semibold">$19 / mo</span>
+                            <span className="my-3 block text-2xl font-semibold">$150 / mes</span>
 
-                            <CardDescription className="text-sm">Per editor</CardDescription>
+                            <CardDescription className="text-sm"></CardDescription>
 
                             <Button asChild className="mt-4 w-full">
-                                <Link href="">Get Started</Link>
+                                <Link href="">Comprar ahora</Link>
                             </Button>
                         </CardHeader>
 
@@ -58,7 +58,7 @@ export default function Pricing() {
                             <hr className="border-dashed" />
 
                             <ul className="list-outside space-y-3 text-sm">
-                                {['Everything in Free Plan', '5GB Cloud Storage', 'Email and Chat Support', 'Access to Community Forum', 'Single User Access', 'Access to Basic Templates', 'Mobile App Access', '1 Custom Report Per Month', 'Monthly Product Updates', 'Standard Security Features'].map((item, index) => (
+                                {['Todo lo incluido en el Plan Básico', '+ 2,500 facturas', 'Soporte por correo electrónico', 'Acceso para 2 usuarios', 'Acceso a plantillas básicas de facturas y notas', '1 reporte personalizado al mes', 'Actualizaciones mensuales del sistema'].map((item, index) => (
                                     <li key={index} className="flex items-center gap-2">
                                         <Check className="size-3" />
                                         {item}
@@ -70,14 +70,14 @@ export default function Pricing() {
 
                     <Card className="flex flex-col">
                         <CardHeader>
-                            <CardTitle className="font-medium">Startup</CardTitle>
+                            <CardTitle className="font-medium">Para empresas</CardTitle>
 
-                            <span className="my-3 block text-2xl font-semibold">$29 / mo</span>
+                            <span className="my-3 block text-2xl font-semibold">$220 / mes</span>
 
-                            <CardDescription className="text-sm">Per editor</CardDescription>
+                            <CardDescription className="text-sm"></CardDescription>
 
                             <Button asChild variant="outline" className="mt-4 w-full">
-                                <Link href="">Get Started</Link>
+                                <Link href="">Comprar ahora</Link>
                             </Button>
                         </CardHeader>
 
@@ -85,7 +85,7 @@ export default function Pricing() {
                             <hr className="border-dashed" />
 
                             <ul className="list-outside space-y-3 text-sm">
-                                {['Everything in Pro Plan', '5GB Cloud Storage', 'Email and Chat Support'].map((item, index) => (
+                                {['Todas las funciones del Plan Profesional', '+ 3,000 facturas', '5GB Almacenamiento en la nube', 'Soporte por correo electrónico', 'Agente AI personalizado'].map((item, index) => (
                                     <li key={index} className="flex items-center gap-2">
                                         <Check className="size-3" />
                                         {item}
