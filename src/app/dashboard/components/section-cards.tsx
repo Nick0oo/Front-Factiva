@@ -1,54 +1,99 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import api from "@/lib/axios"
+import { jwtDecode } from "jwt-decode"
 import { StatCard } from "@/app/dashboard/components/cards/StatCard"
 
+interface JWTPayload { sub: string }
+
 export function SectionCards() {
+  const [stats, setStats] = useState({
+    totalInvoices: 0,
+    paidCount:     0,
+    pendingCount:  0,
+    errorCount:    0
+  })
+  const [loading, setLoading] = useState(true)
+  const [error, setError]     = useState<string>()
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const token = localStorage.getItem("token")
+        if (!token) throw new Error("No estás logueado")
+        const { sub: userId } = jwtDecode<JWTPayload>(token)
+
+        const [
+          totalRes,
+          completedRes,
+          pendingRes,
+          errorRes
+        ] = await Promise.all([
+          api.get<number>(`/invoice/user/${userId}/count`),
+          api.get<number>(`/invoice/user/${userId}/status/completed/count`),
+          api.get<number>(`/invoice/user/${userId}/status/pending/count`),
+          api.get<number>(`/invoice/user/${userId}/status/error/count`)
+        ])
+
+        setStats({
+          totalInvoices: totalRes.data,
+          paidCount:     completedRes.data,
+          pendingCount:  pendingRes.data,
+          errorCount:    errorRes.data
+        })
+      } catch (err: any) {
+        setError(err.response?.data?.message || err.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchStats()
+  }, [])
+
+  if (loading) return <p>Cargando estadísticas…</p>
+  if (error)   return <p className="text-red-500">{error}</p>
+
   const configs = [
     {
-      title: "Total Revenue",
-      value: "$1,250.00",
-      change: 12.5,
-      trend: "up",
-      footerTitle: "Trending up this month",
-      footerSubtitle: "Visitors for the last 6 months",
+      title:          "Total de facturas",
+      value:          stats.totalInvoices,
+      change:         0,
+      trend:          "up",
+      footerTitle:    "Facturas emitidas",
+      footerSubtitle: "Total de registros"
     },
     {
-      title: "New Customers",
-      value: 225,
-      change: 8,
-      trend: "down",
-      footerTitle: "Down this period",
-      footerSubtitle: "Acquisition needs attention",
+      title:          "Facturas completadas",
+      value:          stats.paidCount,
+      change:         0,
+      trend:          "up",
+      footerTitle:    "Estado completado",
+      footerSubtitle: "Clientes cumplidos"
     },
     {
-      title: "Active Accounts",
-      value: 1_045,
-      change: 5,
-      trend: "up",
-      footerTitle: "Strong user retention",
-      footerSubtitle: "Engagement exceed targets",
+      title:          "Facturas pendientes",
+      value:          stats.pendingCount,
+      change:         0,
+      trend:          "down",
+      footerTitle:    "Requiere seguimiento",
+      footerSubtitle: "Acciones pendientes"
     },
     {
-      title: "Growth Rate",
-      value: "15%",
-      change: 15,
-      trend: "up",
-      footerTitle: "Steady performance increase",
-      footerSubtitle: "Meets growth projections",
-    },
+      title:          "Facturas con error",
+      value:          stats.errorCount,
+      change:         0,
+      trend:          "down",
+      footerTitle:    "Estado error",
+      footerSubtitle: "Revisión necesaria"
+    }
   ]
 
   return (
     <section>
-     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 px-4 lg:px-6">
-        {configs.map((c, idx) => (
-          <StatCard
-            key={idx}
-            title={c.title}
-            value={c.value}
-            change={c.change}
-            trend={c.trend}
-            footerTitle={c.footerTitle}
-            footerSubtitle={c.footerSubtitle}
-          />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 px-4 lg:px-6">
+        {configs.map((c, i) => (
+          <StatCard key={i} {...c} />
         ))}
       </div>
     </section>

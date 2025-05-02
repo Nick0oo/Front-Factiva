@@ -1,12 +1,12 @@
 "use client"
 
+import { useRouter } from 'next/navigation'
 import {
   IconCreditCard,
   IconDotsVertical,
   IconLogout,
   IconUserCircle,
 } from "@tabler/icons-react"
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,6 +32,40 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const router = useRouter()
+
+  const handleLogout = async () => {
+    const token = localStorage.getItem("token");
+    console.log("Token recuperado para logout:", token); // <-- Añade este log
+
+    // Verifica si el token es nulo o inválido antes de hacer fetch
+    if (!token || typeof token !== 'string' || token.split('.').length !== 3) {
+      console.error("Token inválido o no encontrado en localStorage. Limpiando y redirigiendo.");
+      localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken");
+      router.push('/Login');
+      return; // No intentes hacer fetch si no hay token válido
+    }
+
+    try {
+      await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/logout`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`, // Asegúrate que token no sea null aquí
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+    } catch (error) {
+      console.error("Error al llamar al endpoint de logout:", error);
+    } finally {
+      localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken");
+      router.push('/Login');
+    }
+  };
 
   return (
     <SidebarMenu>
@@ -79,7 +113,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onSelect={handleLogout}>
               <IconLogout />
               Cerrar sesión
             </DropdownMenuItem>
