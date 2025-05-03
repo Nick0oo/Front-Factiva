@@ -1,11 +1,9 @@
-import { FileText } from "lucide-react";
 
 import { LoginForm } from "@/app/Login/login-form";
 
 export default function LoginPage() {
   return (
-    <div className="bg-black flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
-      
+    <div className="flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
         <div
                     aria-hidden
                     className="absolute inset-0 isolate hidden opacity-65 contain-strict lg:block">
@@ -15,9 +13,6 @@ export default function LoginPage() {
                 </div>
       <div className="flex w-full max-w-sm absolute flex-col gap-6">
         <a href="#" className="flex items-center gap-2 self-center font-medium">
-          <div className="bg-primary text-primary-foreground flex size-8 items-center justify-center rounded-md">
-            <FileText className="size-4" />
-          </div>
           <h1 className="text-4xl font-bold">FACTIVA</h1>
         </a>
         <LoginForm />
