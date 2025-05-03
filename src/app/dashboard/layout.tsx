@@ -2,17 +2,15 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { AppSidebar } from "@/app/dashboard/components/app-sidebar"
-import { DataTable } from "@/app/dashboard/components/data-table"
-import { SectionCards } from "@/app/dashboard/components/section-cards"
-import { SiteHeader } from "@/app/dashboard/components/site-header"
+import { AppSidebar } from "@/app/dashboard/components/app-sidebar";
+import { SiteHeader } from "@/app/dashboard/components/site-header";
 import {
   SidebarInset,
   SidebarProvider,
-} from "@/components/ui/sidebar"
-import data from "@/app/dashboard/data.json"
+} from "@/components/ui/sidebar";
 
 export default function DashboardLayout({
+  children, // <-- Asegúrate de que children esté aquí
 }: {
   children: React.ReactNode;
 }) {
@@ -38,14 +36,11 @@ export default function DashboardLayout({
       <SidebarInset>
         <SiteHeader />
         <div className="flex flex-1 flex-col">
-          <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-              <SectionCards />
-              <DataTable />
-            </div>
+          <div className="flex-1 p-4 md:p-6 lg:p-8"> {/* Ajusta padding si es necesario */}
+            {children} {/* <-- Renderiza el contenido de la página actual */}
           </div>
         </div>
       </SidebarInset>
     </SidebarProvider>
-  )
+  );
 }

@@ -1,10 +1,14 @@
 // app/dashboard/page.tsx
 "use client";
 
-export default function DashboardPage() {
+import { DataTable } from "@/app/dashboard/components/data-table";
+import { SectionCards } from "@/app/dashboard/components/section-cards";
+
+export default function DashboardHomePage() {
   return (
-    <div>
-      {/* Puedes agregar contenido adicional aquí si lo deseas */}
+    <div className="flex flex-col gap-4 md:gap-6"> {/* O la estructura que prefieras */}
+      <SectionCards />
+      <DataTable />
     </div>
   );
 }
