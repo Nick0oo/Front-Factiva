@@ -40,31 +40,43 @@ export function LoginForm({
     console.log("Datos enviados al backend:", formData);
 
     try {
-      const response = await api.post<{ accessToken: string }>(
-        "/auth/login",
-        {
-          email: formData.email,
-          password: formData.password,
-        }
-      );
+      const response = await api.post<{
+        user: any;
+        tokens: { accessToken: string; refreshToken: string };
+        mfaRequired: boolean;
+      }>("/auth/login", {
+        email: formData.email,
+        password: formData.password,
+      });
 
       console.log("Respuesta del backend:", response.data);
 
+      // Verifica y accede al token anidado
       if (
         (response.status === 200 || response.status === 201) &&
-        response.data.accessToken
+        response.data.tokens && // Verifica que 'tokens' exista
+        response.data.tokens.accessToken // Accede al token anidado
       ) {
+        const accessToken = response.data.tokens.accessToken; // Guarda el token en una variable
+
         // guardamos token
-        localStorage.setItem("token", response.data.accessToken);
-        console.log("Token guardado:", response.data.accessToken);
+        localStorage.setItem("token", accessToken);
+        console.log("Token guardado:", accessToken);
 
         // opcional: añadir token al header por defecto de api
-        api.defaults.headers.common.Authorization = `Bearer ${response.data.accessToken}`;
+        api.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
 
-        router.push("/dashboard");
+        // Aquí podrías querer manejar el caso de mfaRequired si es true
+        if (response.data.mfaRequired) {
+           console.log("MFA es requerido. Redirigiendo a verificación...");
+           // router.push('/auth/verify-mfa'); // O la ruta correspondiente
+        } else {
+           router.push("/dashboard");
+        }
+
       } else {
         console.warn("No se recibió el token esperado en el backend.");
-        setError("No se recibió el token del backend");
+        setError("No se recibió el token del backend o la estructura de respuesta es incorrecta.");
       }
     } catch (err: unknown) {
       console.error("Error en la solicitud:", err);
