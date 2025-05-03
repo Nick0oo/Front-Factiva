@@ -49,6 +49,16 @@ export default function NewFacturaForm() {
     setItems(prev => prev.filter((_, i) => i !== index))
   }
 
+  // Añade esta función para actualizar la cantidad de un ítem
+  const updateItemQuantity = (index: number, newQuantity: number) => {
+    setItems(prev => prev.map((item, i) => {
+      if (i === index) {
+        return { ...item, quantity: newQuantity };
+      }
+      return item;
+    }));
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -204,7 +214,19 @@ export default function NewFacturaForm() {
                             <div className="font-medium">{item.name}</div>
                             <div className="text-xs text-muted-foreground">{item.code}</div>
                           </td>
-                          <td className="text-center p-3">{item.quantity || 1}</td>
+                          <td className="text-center p-3">
+                            <Input 
+                              type="number"
+                              min={1}
+                              max={item.stock_quantity || 999}
+                              value={item.quantity}
+                              onChange={(e) => {
+                                const value = parseInt(e.target.value) || 1;
+                                updateItemQuantity(index, value);
+                              }}
+                              className="w-20 h-8 mx-auto text-center"
+                            />
+                          </td>
                           <td className="text-right p-3">${item.price?.toFixed(2) || "0.00"}</td>
                           <td className="text-right p-3">
                             ${((item.quantity || 1) * (item.price || 0)).toFixed(2)}
