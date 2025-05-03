@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 import axios from "axios";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function SignUpPage() {
   const [formData, setFormData] = useState({
@@ -25,6 +26,7 @@ export default function SignUpPage() {
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,6 +37,16 @@ export default function SignUpPage() {
     e.preventDefault();
     setError("");
     setSuccess(false);
+
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+
+    if (!passwordRegex.test(formData.password)) {
+      setError(
+        "La contraseña debe tener al menos 8 caracteres, incluyendo una mayúscula, una minúscula, un número y un símbolo."
+      );
+      return;
+    }
 
     try {
       const response = await axios.post(
@@ -57,7 +69,7 @@ export default function SignUpPage() {
         router.push("/Login");
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || "Error creating account");
+      setError(err.response?.data?.message || "Error al crear la cuenta");
     }
   };
 
@@ -66,13 +78,11 @@ export default function SignUpPage() {
       <Card className="m-auto h-fit w-full max-w-sm rounded-[calc(var(--radius)+.125rem)] border p-0.5 shadow-md dark:[--color-muted:var(--color-zinc-900)]">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl mt-6">Crea una cuenta</CardTitle>
-          <CardDescription>
-            Completa los campos para comenzar
-          </CardDescription>
+          <CardDescription>Completa los campos para comenzar</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit}>
-            <div className="mt-6 sz-2 flex justify-center items-center">
+            <div className="mt-1 sz-2 flex justify-center items-center">
               <Button
                 variant="outline"
                 className="w-full flex items-center justify-center gap-2"
@@ -128,6 +138,7 @@ export default function SignUpPage() {
                   id="name"
                   value={formData.name}
                   onChange={handleChange}
+                  placeholder="John Doe"
                 />
               </div>
 
@@ -142,6 +153,7 @@ export default function SignUpPage() {
                   id="email"
                   value={formData.email}
                   onChange={handleChange}
+                  placeholder="correo@ejemplo.com"
                 />
               </div>
 
@@ -156,6 +168,7 @@ export default function SignUpPage() {
                   id="phone"
                   value={formData.phone}
                   onChange={handleChange}
+                  placeholder="(+57)"
                 />
               </div>
 
@@ -163,14 +176,29 @@ export default function SignUpPage() {
                 <Label htmlFor="password" className="block text-sm">
                   Contraseña
                 </Label>
-                <Input
-                  type="password"
-                  required
-                  name="password"
-                  id="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                />
+                <div className="relative">
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    required
+                    name="password"
+                    id="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="******************"
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
+                  </button>
+                </div>
               </div>
 
               <Button type="submit" className="w-full">
