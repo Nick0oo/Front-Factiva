@@ -2,11 +2,13 @@
 
 import * as React from "react"
 import {
+  IconAlpha,
   IconDashboard,
   IconFileAi,
   IconFolder,
   IconHelp,
   IconInnerShadowTop,
+  IconPackage,
   IconSearch,
 } from "@tabler/icons-react"
 import { useState, useEffect } from "react"
@@ -51,6 +53,8 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const navMain = [
     { title: "Principal",      url: "/dashboard", icon: IconDashboard },
     { title: "Historial",      url: "#", icon: IconSearch },
+    { title: "Clientes",       url: "/dashboard/clients", icon: IconAlpha },
+    { title: "Productos",      url: "/dashboard/products", icon: IconPackage },
     { title: "Automatización", url: "#", icon: IconFileAi },
     { title: "Plantillas",     url: "#", icon: IconFolder },
   ]
