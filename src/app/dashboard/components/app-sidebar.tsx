@@ -52,7 +52,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
 
   const navMain = [
     { title: "Principal",      url: "/dashboard", icon: IconDashboard },
-    { title: "Historial",      url: "#", icon: IconSearch },
+    { title: "Historial",      url: "/dashboard/history", icon: IconSearch },
     { title: "Clientes",       url: "/dashboard/clients", icon: IconAlpha },
     { title: "Productos",      url: "/dashboard/products", icon: IconPackage },
     { title: "Automatización", url: "#", icon: IconFileAi },
