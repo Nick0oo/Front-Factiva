@@ -56,10 +56,10 @@ export function NewClientModal({ open, onOpenChange, initialData, isEdit, onClie
     try {
       if (isEdit && initialData) {
         // Actualizar cliente
-        await api.patch(`/invoice-parties/${initialData._id || initialData.id}`, data);
+        await api.patch(`/invoice-parties/receiver${initialData._id || initialData.id}`, data);
       } else {
         // Crear cliente
-        await api.post('/invoice-parties', data);
+        await api.post('/invoice-parties/receiver', data);
       }
       if (onClientSaved) onClientSaved();
     } catch (err: any) {

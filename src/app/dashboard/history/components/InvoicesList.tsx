@@ -5,9 +5,10 @@ interface InvoicesListProps {
   invoices: Invoice[];
   onView: (invoice: Invoice) => void;
   onDownload: (invoice: Invoice) => void;
+  getClientNameById: (id: string) => string;
 }
 
-export function InvoicesList({ invoices, onView, onDownload }: InvoicesListProps) {
+export function InvoicesList({ invoices, onView, onDownload, getClientNameById }: InvoicesListProps) {
   if (invoices.length === 0) {
     return <div className="text-center text-muted-foreground py-8">No hay facturas registradas.</div>;
   }
@@ -19,6 +20,7 @@ export function InvoicesList({ invoices, onView, onDownload }: InvoicesListProps
           invoice={invoice}
           onView={onView}
           onDownload={onDownload}
+          getClientNameById={getClientNameById}
         />
       ))}
     </div>

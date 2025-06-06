@@ -59,6 +59,7 @@ export function useInvoiceSubmission(
         numbering_range_id: parseInt(data.numbering_range_id),
         reference_code: data.reference_code,
         observation: data.observation || "",
+        notes: data.observation || "",
         payment_method_code: parseInt(data.payment_method_code),
         receiverId,
         items: itemsData,
@@ -114,7 +115,8 @@ export function useInvoiceSubmission(
       const payload = {
         numbering_range_id: parseInt(formValues.numbering_range_id || "0"),
         reference_code: formValues.reference_code || "BORRADOR-" + new Date().getTime(),
-        observation: (formValues.observation || "") + " [BORRADOR]",
+        observation: (formValues.observation || "") ,
+        notes: (formValues.observation || "") ,
         payment_method_code: parseInt(formValues.payment_method_code || "10"),
         status: "pending",
         receiverId,

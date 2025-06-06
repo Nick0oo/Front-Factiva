@@ -44,10 +44,12 @@ export function useClientSubmission(
       const finalData = {
         ...formData,     // ← Primero los datos del formulario (con enums como strings)
         ...clientData,   // ← Después clientData (pero formData ya tiene esos campos!)
+        legal_organization_id: Number(clientData.legal_organization_id),
+        tribute_id: Number(clientData.tribute_id),
+        identification_document_id: Number(clientData.identification_document_id),
         user_id: userId,
       };
-
-   
+      console.log('Payload enviado:', finalData);
 
       const response = await api.post('/invoice-parties/receiver', finalData);
       

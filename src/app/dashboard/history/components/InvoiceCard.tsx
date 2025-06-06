@@ -8,9 +8,10 @@ interface InvoiceCardProps {
   invoice: Invoice;
   onView: (invoice: Invoice) => void;
   onDownload: (invoice: Invoice) => void;
+  getClientNameById: (id: string) => string;
 }
 
-export function InvoiceCard({ invoice, onView, onDownload }: InvoiceCardProps) {
+export function InvoiceCard({ invoice, onView, onDownload, getClientNameById }: InvoiceCardProps) {
   return (
     <Card>
       <CardHeader className="flex justify-between items-center">
@@ -21,7 +22,7 @@ export function InvoiceCard({ invoice, onView, onDownload }: InvoiceCardProps) {
         <Badge variant={invoice.status === 'completed' ? 'default' : invoice.status === 'pending' ? 'secondary' : 'outline'}>{invoice.status}</Badge>
       </CardHeader>
       <div className="px-6 pb-2">
-        <p className="text-sm"><span className="font-medium">Cliente:</span> {invoice.receiverName}</p>
+        <p className="text-sm"><span className="font-medium">Cliente:</span> {getClientNameById(invoice.receiverId)}</p>
         <p className="text-sm"><span className="font-medium">Total:</span> ${invoice.totalAmount.toLocaleString()}</p>
         <p className="text-sm"><span className="font-medium">Método de pago:</span> {invoice.payment_method_code}</p>
         {invoice.observation && <p className="text-xs text-muted-foreground">Obs: {invoice.observation}</p>}

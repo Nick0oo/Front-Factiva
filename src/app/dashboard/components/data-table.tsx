@@ -23,7 +23,7 @@ export const schema = z.object({
 })
 type DataItem = z.infer<typeof schema>
 
-// Factura “bruta” viene con receiverName opcional
+// Factura "bruta" viene con receiverName opcional
 interface InvoiceItem {
   _id: string;
   receiverName?: string;
@@ -56,7 +56,7 @@ export function DataTable() {
           )
           .slice(0, 4)
 
-        // mapeamos al shape de DataCard, generando code “FacN1”, “FacN2”…
+        // mapeamos al shape de DataCard, generando code "FacN1", "FacN2"…
         const mapped: DataItem[] = ult4.map((inv, idx) => {
           // si recibes un string → muéstralo; si recibes obj con name → úsalo
           const companyName = inv.receiverName || "Cliente desconocido"

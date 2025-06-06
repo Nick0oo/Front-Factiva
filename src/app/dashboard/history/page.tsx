@@ -2,14 +2,37 @@
 import { useInvoicesHistory } from './hooks/useInvoicesHistory';
 import { InvoicesList } from './components/InvoicesList';
 import { useRouter } from 'next/navigation';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { InvoicesFilters } from './components/InvoicesFilters';
 import { PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import api from '@/lib/axios';
+import { jwtDecode } from 'jwt-decode';
+import type { Client } from '@/app/dashboard/clients/models/client.types';
 
 export default function HistoryPage() {
   const { invoices, loading, error } = useInvoicesHistory();
   const router = useRouter();
+
+  // Estado para clientes
+  const [clientes, setClientes] = useState<Client[]>([]);
+
+  useEffect(() => {
+    const fetchClientes = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      const { sub: userId } = jwtDecode<{ sub: string }>(token);
+      const res = await api.get(`/invoice-parties/user/${userId}`);
+      setClientes(res.data);
+    };
+    fetchClientes();
+  }, []);
+
+  // Función para obtener el nombre del cliente por id
+  const getClientNameById = (id: string) => {
+    const cliente = clientes.find(c => c._id === id || c.id === id);
+    return cliente ? cliente.names : 'Cliente desconocido';
+  };
 
   // Filtros de estado y cliente
   const [statusFilter, setStatusFilter] = useState<string>('');
@@ -85,6 +108,7 @@ export default function HistoryPage() {
         invoices={filteredInvoices}
         onView={handleView}
         onDownload={handleDownload}
+        getClientNameById={getClientNameById}
       />
     </div>
   );
