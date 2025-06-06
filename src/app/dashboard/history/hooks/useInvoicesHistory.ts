@@ -52,8 +52,7 @@ export function useInvoicesHistory() {
         const res = await api.get(`/invoice/user/${userId}`);
         // Mapear la respuesta al modelo Invoice
         const mapped: Invoice[] = res.data.map((inv: any) => {
-          console.log('Factura recibida:', inv);
-          // Buscar el nombre del receptor en varios campos posibles
+          // Buscar el nombre real del receptor igual que en el dashboard
           let receiverName =
             inv.receiverName ||
             inv.receiver?.name ||

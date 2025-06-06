@@ -55,8 +55,6 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
     { title: "Historial",      url: "/dashboard/history", icon: IconSearch },
     { title: "Clientes",       url: "/dashboard/clients", icon: IconAlpha },
     { title: "Productos",      url: "/dashboard/products", icon: IconPackage },
-    { title: "Automatización", url: "#", icon: IconFileAi },
-    { title: "Plantillas",     url: "#", icon: IconFolder },
   ]
 
   const navSecondary = [
