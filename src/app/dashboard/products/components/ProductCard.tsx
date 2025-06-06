@@ -3,9 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Pencil, Trash2 } from 'lucide-react';
 import { Product } from '../models/product.model';
-import { ProductIdentification } from '../models/product-identification.enum';
-import { UnitMeasure } from '../models/unit-measure.enum';
-import { Tribute } from '../models/tribute.enum';
+
 
 interface ProductCardProps {
   product: Product;
@@ -22,7 +20,7 @@ export function ProductCard({ product, onDelete, onEdit }: ProductCardProps) {
             {product.name || 'Sin nombre'}
           </h3>
           <Badge variant="secondary">
-            {ProductIdentification[product.standard_code_id as number] || 'Sin código'}
+            {product.standard_code_id.name || 'Sin código'}
           </Badge>
         </div>
         <p className="text-sm text-muted-foreground mb-1">
@@ -35,11 +33,11 @@ export function ProductCard({ product, onDelete, onEdit }: ProductCardProps) {
         </p>
         <p className="text-sm text-muted-foreground mb-1">
           <span className="font-medium">Unidad de medida: </span>
-          {UnitMeasure[product.unit_measure as number] || 'Sin unidad'}
+          {product.unit_measure.name || 'Sin unidad'}        
         </p>
         <p className="text-sm text-muted-foreground mb-1">
           <span className="font-medium">Tributo: </span>
-          {Tribute[product.tribute_id as number] || 'Sin tributo'}
+          {product.tribute_id.name || 'Sin tributo'}
         </p>
       </CardContent>
       <CardFooter className="border-t bg-muted/20 px-6 py-3 flex justify-between">

@@ -82,14 +82,15 @@ export function GeneralDataSection({ form }: GeneralDataSectionProps) {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="10">Efectivo</SelectItem>
-                    <SelectItem value="20">Cheque</SelectItem>
-                    <SelectItem value="23">Transferencia Débito</SelectItem>
-                    <SelectItem value="24">Transferencia Crédito</SelectItem>
                     <SelectItem value="42">Consignación bancaria</SelectItem>
-                    <SelectItem value="45">Transferencia bancaria</SelectItem>
-                    <SelectItem value="47">Tarjeta Crédito</SelectItem>
-                    <SelectItem value="48">Tarjeta Débito</SelectItem>
-                    <SelectItem value="49">Tarjeta Prepago</SelectItem>
+                    <SelectItem value="20">Cheque</SelectItem>
+                    <SelectItem value="47">Transferencia bancaria</SelectItem>
+                    <SelectItem value="71">Bonos</SelectItem>
+                    <SelectItem value="72">Cupones</SelectItem>
+                    <SelectItem value="1">Medio de pago no definido</SelectItem>
+                    <SelectItem value="48">Tarjeta Crédito</SelectItem>
+                    <SelectItem value="49">Tarjeta Débito</SelectItem>
+                    <SelectItem value="zzz">Otro</SelectItem>
                   </SelectContent>
                 </Select>
               </FormControl>

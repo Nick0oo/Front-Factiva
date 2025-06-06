@@ -28,7 +28,7 @@ export function useInvoiceForm() {
       numbering_range_id: '',
       reference_code: '',
       observation: '',
-      payment_method_code: '10',
+      payment_method_code: '',
       tribute_id: '',
     },
   });
