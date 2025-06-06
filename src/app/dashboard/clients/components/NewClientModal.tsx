@@ -51,15 +51,24 @@ export function NewClientModal({ open, onOpenChange, initialData, isEdit, onClie
   const isCompany = clientData.legal_organization_id === 1;
 
   const onSubmit = async (data: any) => {
+    console.log('onSubmit ejecutado', data, clientData);
     setIsSubmitting(true);
     setError(null);
     try {
+      // Combina los datos del formulario con los de clientData
+      const finalData = {
+        ...data,
+        ...clientData,
+        legal_organization_id: Number(clientData.legal_organization_id),
+        tribute_id: Number(clientData.tribute_id),
+        identification_document_id: Number(clientData.identification_document_id),
+      };
+      console.log('Payload enviado:', finalData);
+
       if (isEdit && initialData) {
-        // Actualizar cliente
-        await api.patch(`/invoice-parties/receiver${initialData._id || initialData.id}`, data);
+        await api.patch(`/invoice-parties/receiver${initialData._id || initialData.id}`, finalData);
       } else {
-        // Crear cliente
-        await api.post('/invoice-parties/receiver', data);
+        await api.post('/invoice-parties/receiver', finalData);
       }
       if (onClientSaved) onClientSaved();
     } catch (err: any) {
