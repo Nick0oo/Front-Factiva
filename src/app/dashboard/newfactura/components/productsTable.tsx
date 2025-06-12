@@ -16,6 +16,19 @@ interface ProductsTableProps {
 export function ProductsTable({
   items, itemTaxes, updateItemTax, updateItemQuantity, removeItem
 }: ProductsTableProps) {
+  
+  // Función para calcular el total de un ítem incluyendo IVA
+  const calculateItemTotal = (item: Item, index: number) => {
+    const baseTotal = (item.quantity || 1) * (item.price || 0);
+    const taxRate = itemTaxes[index] ? parseInt(itemTaxes[index]) : 0;
+    
+    if (taxRate === 0) {
+      return baseTotal;
+    } else {
+      return baseTotal * (1 + taxRate / 100);
+    }
+  };
+
   return (
     <div className="rounded-md border overflow-hidden">
       <table className="w-full">
@@ -66,7 +79,7 @@ export function ProductsTable({
               </td>
               <td className="text-right p-3">${item.price?.toLocaleString('es-CO', {minimumFractionDigits: 2})}</td>
               <td className="text-right p-3">
-                ${((item.quantity || 1) * (item.price || 0)).toLocaleString('es-CO', {minimumFractionDigits: 2})}
+                ${calculateItemTotal(item, index).toLocaleString('es-CO', {minimumFractionDigits: 2})}
               </td>
               <td className="p-3">
                 <Button 
@@ -85,7 +98,7 @@ export function ProductsTable({
           <tr className="bg-muted/30 font-medium">
             <td colSpan={4} className="text-right p-3">Total:</td>
             <td className="text-right p-3">
-              ${items.reduce((sum, item) => sum + ((item.quantity || 1) * (item.price || 0)), 0).toLocaleString('es-CO', {minimumFractionDigits: 2})}
+              ${items.reduce((sum, item, index) => sum + calculateItemTotal(item, index), 0).toLocaleString('es-CO', {minimumFractionDigits: 2})}
             </td>
             <td></td>
           </tr>

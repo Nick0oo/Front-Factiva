@@ -7,34 +7,19 @@ import { jwtDecode } from 'jwt-decode';
 interface JWTPayload { sub: string }
 
 const PAYMENT_METHODS: Record<string, string> = {
+  '1': 'Medio no definido',
   '10': 'Efectivo',
   '20': 'Cheque',
-  '30': 'Tarjeta de Crédito',
-  '31': 'Tarjeta de Débito',
-  '48': 'Transferencia',
-  '49': 'Depósito',
+  '42': 'Consignación',
+  '47': 'Transferencia',
+  '48': 'Tarjeta de Crédito',
+  '49': 'Tarjeta de Débito',
+  '71': 'Bonos',
+  '72': 'Vales',
   'ZZZ': 'Otro',
+  
 };
 
-// Mock temporal
-const mockInvoices: Invoice[] = [
-  {
-    id: '1',
-    invoiceNumber: 'FAC-001',
-    date: '2024-06-05',
-    amount: 150000,
-    status: 'Pagada',
-    clientName: 'Juan Perez',
-  },
-  {
-    id: '2',
-    invoiceNumber: 'FAC-002',
-    date: '2024-06-04',
-    amount: 200000,
-    status: 'Pendiente',
-    clientName: 'Maria Gomez',
-  },
-];
 
 export function useInvoicesHistory() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);

@@ -6,16 +6,20 @@ import { useRouter } from "next/navigation"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { toast } from 'sonner'
 
 interface JWTPayload { sub: string }
 
 const PAYMENT_METHODS: Record<string, string> = {
+  '1': 'Medio no definido',
   '10': 'Efectivo',
   '20': 'Cheque',
-  '30': 'Tarjeta de Crédito',
-  '31': 'Tarjeta de Débito',
-  '48': 'Transferencia',
-  '49': 'Depósito',
+  '42': 'Consignación',
+  '47': 'Transferencia',
+  '48': 'Tarjeta de Crédito',
+  '49': 'Tarjeta de Débito',
+  '71': 'Bonos',
+  '72': 'Vales',
   'ZZZ': 'Otro',
 }
 
@@ -81,13 +85,43 @@ const RecentInvoices = () => {
   const handleNext = () => setCurrent((prev) => (prev === invoices.length - 1 ? 0 : prev + 1))
   const handleViewAll = () => router.push('/dashboard/history')
 
+  const handleDownload = async (invoice: any) => {
+    try {
+      // Hacer la petición con el token de autorización
+      const response = await api.get(`/factus/download-pdf-base64/${invoice._id}`, {
+        responseType: 'blob',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      // Crear URL del blob
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      
+      // Abrir en nueva pestaña
+      window.open(url, '_blank');
+
+
+      // Limpiar URL del blob
+      window.URL.revokeObjectURL(url);
+
+      toast.success('PDF descargado correctamente');
+    } catch (error) {
+      console.error('Error al descargar el PDF:', error);
+      toast.error('Error al descargar el PDF', {
+        description: error instanceof Error ? error.message : 'Error desconocido'
+      });
+    }
+  };
+
   if (loading) return <p className="p-4">Cargando facturas…</p>
   if (error) return <p className="p-4 text-red-500">{error}</p>
   if (!invoices.length) return <p className="p-4">No hay facturas recientes.</p>
 
   const inv = invoices[current]
   const statusColor =
-    inv.status === 'Pagada' || inv.status === 'completed' ? 'success' :
+    inv.status === 'Pagada' || inv.status === 'completed' ? 'success': inv.status =  "enviada";
     inv.status === 'Pendiente' || inv.status === 'pending' ? 'warning' :
     'destructive'
 
@@ -128,8 +162,7 @@ const RecentInvoices = () => {
             <div className="text-muted-foreground text-base">Método de pago:</div>
             <div className="font-medium text-lg mb-2">{inv.payment_method_code}</div>
             <div className="flex gap-3 mt-2">
-              <Button size="icon" variant="outline" aria-label="Ver factura"><IconEye size={20} /></Button>
-              <Button size="icon" variant="outline" aria-label="Descargar factura"><IconDownload size={20} /></Button>
+              <Button size="icon" variant="outline" aria-label="Descargar factura" onClick={() => handleDownload(inv)}><IconDownload size={20} /></Button>
             </div>
           </CardContent>
         </Card>
