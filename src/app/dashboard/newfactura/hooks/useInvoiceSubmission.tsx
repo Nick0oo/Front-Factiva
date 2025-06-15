@@ -5,17 +5,29 @@ import { type FormValues } from './useInvoiceForm';
 import { type Customer } from '../models/CustomerModal';
 import { type Item } from '../models/ItemsModal';
 import api from '@/lib/axios';
+import dayjs from 'dayjs';
 
 export function useInvoiceSubmission(
   form: UseFormReturn<FormValues>,
   customer: Customer | null,
   items: Item[],
   itemTaxes: Record<number, string>,
-  router: AppRouterInstance
+  router: AppRouterInstance,
+  options?: { onDraftSaved?: () => void }
 ) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Función para crear y enviar la factura
+  const getNextReferenceCode = async () => {
+    // Obtener la fecha actual en formato YYYYMMDD
+    const fecha = dayjs().format('YYYYMMDD');
+    // Lógica para obtener el siguiente número de factura del usuario (puedes ajustar según tu backend)
+    // Aquí solo se simula con un número aleatorio para el ejemplo
+    // Lo ideal sería pedir al backend el último número del día y sumarle 1
+    const n = Math.floor(Math.random() * 1000) + 1;
+    return `FA-${fecha}-${n}`;
+  };
+
+  // Función para crear y enviar la factura (flujo final)
   const handleSubmit = async (data: FormValues) => {
     if (!customer) {
       alert("Error: Debe seleccionar un cliente para la factura");
@@ -55,9 +67,11 @@ export function useInvoiceSubmission(
       });
 
       const totalAmount = items.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+      // Generar reference_code automáticamente
+      const reference_code = await getNextReferenceCode();
       const payload = {
         numbering_range_id: parseInt(data.numbering_range_id),
-        reference_code: data.reference_code,
+        reference_code,
         observation: data.observation || "",
         notes: data.observation || "",
         payment_method_code: parseInt(data.payment_method_code),
@@ -67,13 +81,11 @@ export function useInvoiceSubmission(
         total_amount: totalAmount,
       };
 
-      console.log("Enviando factura:", payload);
-      const response = await api.post('/invoice/create', payload);
-      alert("Éxito: La factura se ha creado correctamente");
-      router.push('/dashboard/invoices');
+      await api.post('/invoice/create', payload);
+      router.push('/dashboard/history');
     } catch (error: any) {
       console.error("Error al crear factura:", error);
-      alert(`Error: ${error.response?.data?.message || "Error al crear la factura"}`);
+      alert(`Error: ${error.response?.data?.message || error.message || "Error al crear la factura"}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -126,13 +138,13 @@ export function useInvoiceSubmission(
         is_draft: true
       };
 
-      console.log("Enviando borrador:", payload);
       const response = await api.post('/invoice/create', payload);
-      console.log("¡Borrador guardado con éxito!", response.data);
       alert("El borrador se ha guardado correctamente");
+      // Si se provee un callback para cerrar modal, llamarlo
+      if (options?.onDraftSaved) options.onDraftSaved();
     } catch (error: any) {
       console.error("Error al guardar borrador:", error);
-      alert(`Error: ${error.response?.data?.message || "Error al guardar el borrador"}`);
+      alert(`Error: ${error.response?.data?.message || error.message || "Error al guardar el borrador"}`);
     } finally {
       setIsSubmitting(false);
     }

@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation"
 import api from "@/lib/axios"
 import { jwtDecode } from "jwt-decode"
 import { z } from "zod"
-import { DataCard } from "@/app/dashboard/components/cards/DataCard"
 import { Button } from "@/components/ui/button"
 
 // — actualizamos el schema:
@@ -111,16 +110,6 @@ export function DataTable() {
           <Button onClick={() => router.push("/dashboard/invoices")} variant="outline">
             Ver todo
           </Button>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {data.map(item => (
-            <DataCard
-              key={item.id}
-              item={item}
-              onView={handleView}
-              onDelete={handleDelete}
-            />
-          ))}
         </div>
       </div>
     </div>

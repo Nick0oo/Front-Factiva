@@ -10,6 +10,7 @@ import { Search, Loader2 } from 'lucide-react'
 // Importar la instancia personalizada de axios y jwtDecode
 import api from "@/lib/axios"
 import { jwtDecode } from "jwt-decode"
+import { ProductFormModal } from '@/app/dashboard/products/components/ProductFormModal'
 
 // Definir el tipo para el payload del JWT
 interface JWTPayload { sub: string }
@@ -39,6 +40,7 @@ export function ItemsModal({ open, onOpenChange, onAdd }: ItemsModalProps) {
   const [items, setItems] = useState<Item[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showNewProductModal, setShowNewProductModal] = useState(false);
   
   // Función para obtener los productos desde la API
   const fetchProducts = async () => {
@@ -122,6 +124,14 @@ export function ItemsModal({ open, onOpenChange, onAdd }: ItemsModalProps) {
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
             />
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="ml-2 whitespace-nowrap"
+              onClick={() => setShowNewProductModal(true)}
+            >
+              + Nuevo Producto
+            </Button>
           </div>
           
           {/* Lista de ítems */}
@@ -199,6 +209,16 @@ export function ItemsModal({ open, onOpenChange, onAdd }: ItemsModalProps) {
           </ScrollArea>
         </div>
       </DialogContent>
+      {/* Modal para crear nuevo producto */}
+      <ProductFormModal
+        open={showNewProductModal}
+        onClose={() => setShowNewProductModal(false)}
+        onSubmit={async (product) => {
+          setShowNewProductModal(false);
+          await fetchProducts();
+        }}
+        products={items}
+      />
     </Dialog>
   )
 }

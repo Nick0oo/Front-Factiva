@@ -2,7 +2,8 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Pencil, Trash2 } from 'lucide-react'
-import { type Client } from './ClientsList'
+import { type Client } from '../models/client.types'
+import { OrganizationType } from '../models/enum/OrganizationType'
 
 interface ClientCardProps {
   client: Client;
@@ -11,6 +12,11 @@ interface ClientCardProps {
 }
 
 export function ClientCard({ client, onDelete, onEdit }: ClientCardProps) {
+  // Determinar tipo de organización
+  const isEmpresa = client.legal_organization_id === OrganizationType.PERSONA_JURIDICA;
+  const tipoTexto = isEmpresa ? 'Empresa' : 'Persona';
+  const badgeVariant: 'secondary' | 'outline' = isEmpresa ? 'secondary' : 'outline';
+
   return (
     <Card className="overflow-hidden">
       <CardContent className="p-6">
@@ -18,9 +24,7 @@ export function ClientCard({ client, onDelete, onEdit }: ClientCardProps) {
           <h3 className="font-semibold text-lg truncate">
             {client.names || client.trade_name || 'Sin nombre'}
           </h3>
-          <Badge variant={client.partyType === 'LEGAL' ? 'secondary' : 'outline'}>
-            {client.partyType === 'LEGAL' ? 'Empresa' : 'Persona'}
-          </Badge>
+          <Badge variant={badgeVariant}>{tipoTexto}</Badge>
         </div>
         
         <p className="text-sm text-muted-foreground mb-1">

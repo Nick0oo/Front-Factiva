@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Product } from '../models/product.model';
+import { jwtDecode } from 'jwt-decode';
 
 export interface Tribute {
   id: number;
@@ -36,7 +37,9 @@ export function useProducts() {
     setError(null);
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`${API_URL}/products`, {
+      if (!token) throw new Error('No autenticado');
+      const { sub: userId } = jwtDecode<{ sub: string }>(token);
+      const res = await fetch(`${API_URL}/products/user/${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error('Error al obtener productos');

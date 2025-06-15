@@ -45,14 +45,7 @@ export function NavMain({
                 <span>Crear Factura</span>
               </Link>
             </SidebarMenuButton>
-            <Button
-              size="icon"
-              variant="outline"
-              className="size-8 group-data-[collapsible=icon]:opacity-0"
-            >
-              <IconBell />
-              <span className="sr-only">Notificaciones</span>
-            </Button>
+            
           </SidebarMenuItem>
         </SidebarMenu>
 

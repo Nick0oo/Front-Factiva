@@ -65,7 +65,7 @@ const QuickSummaryAndTips = () => {
             </ul>
           )}
           <div className="mb-2">Progreso</div>
-          <Progress value={progress} className="h-2 bg-muted" indicatorClassName="bg-yellow-500" />
+          <Progress value={progress} className="h-2 bg-yellow-500/30" />
         </CardContent>
       </Card>
       <Card>

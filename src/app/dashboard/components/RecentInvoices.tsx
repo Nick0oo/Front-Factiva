@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import api from "@/lib/axios"
 import { jwtDecode } from "jwt-decode"
-import { IconEye, IconDownload, IconChevronLeft, IconChevronRight } from "@tabler/icons-react"
+import { IconEye, IconDownload, IconChevronLeft, IconChevronRight, IconSend } from "@tabler/icons-react"
 import { useRouter } from "next/navigation"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -38,6 +38,7 @@ const RecentInvoices = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [current, setCurrent] = useState(0)
+  const [isValidating, setIsValidating] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -115,15 +116,39 @@ const RecentInvoices = () => {
     }
   };
 
+  const handleValidate = async (invoice: Invoice) => {
+    setIsValidating(true);
+    try {
+      await api.post(`/factus/validate/${invoice._id}`);
+      toast.success('Factura enviada y validada correctamente');
+      // Opcional: podrías recargar la lista o actualizar el estado visualmente
+    } catch (error: any) {
+      console.error('Error al enviar la factura:', error);
+      toast.error('Error al enviar la factura', {
+        description: error?.response?.data?.message || error.message || 'Error desconocido'
+      });
+    } finally {
+      setIsValidating(false);
+    }
+  };
+
   if (loading) return <p className="p-4">Cargando facturas…</p>
   if (error) return <p className="p-4 text-red-500">{error}</p>
   if (!invoices.length) return <p className="p-4">No hay facturas recientes.</p>
 
   const inv = invoices[current]
-  const statusColor =
-    inv.status === 'Pagada' || inv.status === 'completed' ? 'success': inv.status =  "enviada";
-    inv.status === 'Pendiente' || inv.status === 'pending' ? 'warning' :
-    'destructive'
+  let statusColor: 'default' | 'destructive' | 'outline' | 'secondary' = 'outline';
+  let badgeText = inv.status;
+  if (["Pagada", "completed", "enviada", "Enviada"].includes(inv.status)) {
+    statusColor = 'default';
+    badgeText = 'Emitida';
+  } else if (["pending", "Pendiente"].includes(inv.status)) {
+    statusColor = 'secondary';
+    badgeText = 'Pendiente';
+  } else if (["cancelled", "anulada", "Anulada", "error", "Error"].includes(inv.status)) {
+    statusColor = 'destructive';
+    badgeText = 'Anulada';
+  }
 
   return (
     <section className="w-full">
@@ -151,7 +176,7 @@ const RecentInvoices = () => {
               <CardDescription>{new Date(inv.createdAt).toLocaleDateString()}</CardDescription>
             </div>
             <Badge variant={statusColor} className="capitalize text-base px-3 py-1 rounded-full">
-              {inv.status}
+              {badgeText}
             </Badge>
           </CardHeader>
           <CardContent className="flex flex-col gap-2 pt-2">
@@ -163,6 +188,20 @@ const RecentInvoices = () => {
             <div className="font-medium text-lg mb-2">{inv.payment_method_code}</div>
             <div className="flex gap-3 mt-2">
               <Button size="icon" variant="outline" aria-label="Descargar factura" onClick={() => handleDownload(inv)}><IconDownload size={20} /></Button>
+              {/* Botón de enviar solo si está pendiente */}
+              {['pending', 'Pendiente'].includes(inv.status) && (
+                <Button
+                  size="icon"
+                  variant="secondary"
+                  aria-label="Enviar a la DIAN"
+                  title="Enviar a la DIAN"
+                  onClick={() => handleValidate(inv)}
+                  disabled={isValidating}
+                  className="hover:bg-blue-600 hover:text-white transition-colors"
+                >
+                  <IconSend size={20} />
+                </Button>
+              )}
             </div>
           </CardContent>
         </Card>

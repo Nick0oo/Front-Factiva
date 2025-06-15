@@ -4,6 +4,8 @@ import { useProducts } from './hooks/useProducts';
 import { Product } from './models/product.model';
 import { ProductList } from './components/ProductList';
 import { ProductFormModal } from './components/ProductFormModal';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
 
 const ProductsPage = () => {
   const {
@@ -11,6 +13,7 @@ const ProductsPage = () => {
     loading,
     error,
     createProduct,
+    updateProduct,
     deleteProduct,
     tributes,
     loadingTributes,
@@ -22,9 +25,14 @@ const ProductsPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editProduct, setEditProduct] = useState<Product | null>(null);
 
-  const handleCreate = async (product: Omit<Product, '_id'>) => {
-    await createProduct(product);
+  const handleSubmit = async (product: Omit<Product, '_id'>) => {
+    if (editProduct && editProduct._id) {
+      await updateProduct(editProduct._id, product);
+    } else {
+      await createProduct(product);
+    }
     setModalOpen(false);
+    setEditProduct(null);
   };
 
   // Para edición futura
@@ -34,15 +42,16 @@ const ProductsPage = () => {
     <div className="p-6">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Productos</h1>
-        <button
-          className="bg-blue-600 text-white px-4 py-2 rounded"
+        <Button
+          variant="default"
           onClick={() => {
             setEditProduct(null);
             setModalOpen(true);
           }}
+          className="gap-2"
         >
-          Crear producto
-        </button>
+          <Plus className="h-4 w-4" /> Crear producto
+        </Button>
       </div>
       {loading && <div>Cargando...</div>}
       {error && <div className="text-red-600">{error}</div>}
@@ -56,8 +65,11 @@ const ProductsPage = () => {
       />
       <ProductFormModal
         open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onSubmit={handleCreate}
+        onClose={() => {
+          setModalOpen(false);
+          setEditProduct(null);
+        }}
+        onSubmit={handleSubmit}
         initialData={editProduct || undefined}
         tributes={tributes}
         loadingTributes={loadingTributes}

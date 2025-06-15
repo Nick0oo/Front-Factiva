@@ -56,8 +56,7 @@ export default function NewFacturaForm() {
         
         <FormActions 
           isSubmitting={isSubmitting}
-          onCancel={() => router.push('/dashboard')}
-          onSaveDraft={handleSaveDraft}
+          onCancel={() => router.push('/dashboard/history')}
         />
       </form>
     </Form>

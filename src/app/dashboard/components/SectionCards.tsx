@@ -71,7 +71,7 @@ const SectionCards = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <Progress value={progress} className="h-2 bg-muted" indicatorClassName="bg-yellow-500" />
+            <Progress value={progress} className="h-2 bg-yellow-500/30" />
           </CardContent>
         </Card>
         <Card>
@@ -83,7 +83,7 @@ const SectionCards = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <Progress value={100} className="h-2 bg-muted" indicatorClassName="bg-green-500" />
+            <Progress value={100} className="h-2 bg-green-500/30" />
           </CardContent>
         </Card>
       </div>

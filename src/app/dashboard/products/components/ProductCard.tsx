@@ -3,6 +3,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Pencil, Trash2 } from 'lucide-react';
 import { Product } from '../models/product.model';
+import { ProductIdentification } from '../models/product-identification.enum';
+import { UnitMeasure } from '../models/unit-measure.enum';
+import { Tribute } from '../models/tribute.enum';
 
 
 interface ProductCardProps {
@@ -12,6 +15,23 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, onDelete, onEdit }: ProductCardProps) {
+  // Normalizar valores para enums (pueden venir como objeto o primitivo)
+  function getEnumValue(val: any) {
+    if (val && typeof val === 'object') {
+      if ('id' in val) return val.id;
+      if ('code' in val) return val.code;
+      if ('name' in val) return val.name;
+      return '';
+    }
+    return val;
+  }
+  const standardCodeId = getEnumValue(product.standard_code_id);
+  const unitMeasure = getEnumValue(product.unit_measure);
+  const tributeId = getEnumValue(product.tribute_id);
+
+  let codeName = ProductIdentification[standardCodeId as keyof typeof ProductIdentification] || standardCodeId || 'Sin código';
+  let unitName = UnitMeasure[unitMeasure as keyof typeof UnitMeasure] || unitMeasure || 'Sin unidad';
+  let tributeName = Tribute[tributeId as keyof typeof Tribute] || tributeId || 'Sin tributo';
   return (
     <Card className="overflow-hidden">
       <CardContent className="p-6">
@@ -19,25 +39,19 @@ export function ProductCard({ product, onDelete, onEdit }: ProductCardProps) {
           <h3 className="font-semibold text-lg truncate">
             {product.name || 'Sin nombre'}
           </h3>
-          <Badge variant="secondary">
-            {product.standard_code_id.name || 'Sin código'}
-          </Badge>
+          <Badge variant="outline" className="ml-2">{product.code_reference || '-'}</Badge>
         </div>
-        <p className="text-sm text-muted-foreground mb-1">
-          <span className="font-medium">Código: </span>
-          {product.code_reference || 'Sin código'}
-        </p>
         <p className="text-sm text-muted-foreground mb-1">
           <span className="font-medium">Precio: </span>
           {product.price}
         </p>
         <p className="text-sm text-muted-foreground mb-1">
           <span className="font-medium">Unidad de medida: </span>
-          {product.unit_measure.name || 'Sin unidad'}        
+          {unitName}
         </p>
         <p className="text-sm text-muted-foreground mb-1">
           <span className="font-medium">Tributo: </span>
-          {product.tribute_id.name || 'Sin tributo'}
+          {tributeName}
         </p>
       </CardContent>
       <CardFooter className="border-t bg-muted/20 px-6 py-3 flex justify-between">

@@ -2,9 +2,11 @@ import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@/comp
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Eye, Download } from 'lucide-react';
+import { IconSend } from '@tabler/icons-react';
 import { Invoice } from '../models/invoice.model';
 import api from '@/lib/axios';
 import { toast } from 'sonner';
+import { useState } from 'react';
 
 interface InvoiceCardProps {
   invoice: Invoice;
@@ -14,6 +16,22 @@ interface InvoiceCardProps {
 }
 
 export function InvoiceCard({ invoice, onView, onDownload }: InvoiceCardProps) {
+  const [isValidating, setIsValidating] = useState(false);
+
+  // Determinar color y texto del badge
+  let badgeColor: 'default' | 'destructive' | 'outline' | 'secondary' = 'outline';
+  let badgeText = invoice.status;
+  if (["completed", "Pagada", "enviada", "Enviada"].includes(invoice.status)) {
+    badgeColor = 'default';
+    badgeText = 'Emitida';
+  } else if (["pending", "Pendiente"].includes(invoice.status)) {
+    badgeColor = 'secondary';
+    badgeText = 'Pendiente';
+  } else if (["cancelled", "anulada", "Anulada", "error", "Error"].includes(invoice.status)) {
+    badgeColor = 'destructive';
+    badgeText = 'Anulada';
+  }
+
   const handleDownload = async () => {
     try {
       // Hacer la petición con el token de autorización
@@ -40,6 +58,23 @@ export function InvoiceCard({ invoice, onView, onDownload }: InvoiceCardProps) {
     }
   };
 
+  // Nueva función para validar/enviar factura
+  const handleValidate = async () => {
+    setIsValidating(true);
+    try {
+      const response = await api.post(`/factus/validate/${invoice._id}`);
+      toast.success('Factura validada y enviada correctamente');
+      // Opcional: podrías recargar la lista o actualizar el estado visualmente
+    } catch (error: any) {
+      console.error('Error al validar la factura:', error);
+      toast.error('Error al validar la factura', {
+        description: error?.response?.data?.message || error.message || 'Error desconocido'
+      });
+    } finally {
+      setIsValidating(false);
+    }
+  };
+
   return (
     <Card>
       <CardHeader className="flex justify-between items-center">
@@ -47,7 +82,7 @@ export function InvoiceCard({ invoice, onView, onDownload }: InvoiceCardProps) {
           <CardTitle className="text-base">Factura #{invoice.reference_code}</CardTitle>
           <CardDescription className="text-xs text-muted-foreground">{new Date(invoice.createdAt).toLocaleDateString()}</CardDescription>
         </div>
-        <Badge variant={invoice.status === 'Enviada' ? 'default' : invoice.status === 'pending' ? 'secondary' : 'outline'}>{invoice.status}</Badge>
+        <Badge variant={badgeColor}>{badgeText}</Badge>
       </CardHeader>
       <div className="px-6 pb-2">
         <p className="text-sm"><span className="font-medium">Cliente:</span> {invoice.receiverName}</p>
@@ -60,6 +95,20 @@ export function InvoiceCard({ invoice, onView, onDownload }: InvoiceCardProps) {
         <Button variant="outline" size="icon" onClick={handleDownload}>
           <Download className="w-4 h-4" />
         </Button>
+        {/* Botón de validar solo si está pendiente */}
+        {["pending", "Pendiente"].includes(invoice.status) && (
+          <Button
+            size="icon"
+            variant="secondary"
+            onClick={handleValidate}
+            disabled={isValidating}
+            aria-label="Enviar a la DIAN"
+            title="Enviar a la DIAN"
+            className="hover:bg-blue-600 hover:text-white transition-colors"
+          >
+            <IconSend size={20} />
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );

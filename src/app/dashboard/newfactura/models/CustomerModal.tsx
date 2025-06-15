@@ -10,6 +10,7 @@ import { Search, Building, User, Loader2 } from 'lucide-react'
 // Importar la instancia personalizada de axios y jwtDecode
 import api from "@/lib/axios"
 import { jwtDecode } from "jwt-decode"
+import { NewClientModal } from '@/app/dashboard/clients/components/NewClientModal'
 
 // Definir el tipo para el payload del JWT
 interface JWTPayload { sub: string }
@@ -44,6 +45,7 @@ export function CustomerModal({ open, onOpenChange, onSelect }: CustomerModalPro
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showNewClientModal, setShowNewClientModal] = useState(false);
 
   // Verificar información de usuario al inicio (agregar para depuración)
   useEffect(() => {
@@ -151,9 +153,7 @@ export function CustomerModal({ open, onOpenChange, onSelect }: CustomerModalPro
               variant="outline" 
               size="sm"
               className="whitespace-nowrap" 
-              onClick={() => {
-                alert("Funcionalidad de agregar nuevo cliente en desarrollo");
-              }}
+              onClick={() => setShowNewClientModal(true)}
             >
               + Nuevo Cliente
             </Button>
@@ -242,6 +242,15 @@ export function CustomerModal({ open, onOpenChange, onSelect }: CustomerModalPro
           </ScrollArea>
         </div>
       </DialogContent>
+      {/* Modal para crear nuevo cliente */}
+      <NewClientModal 
+        open={showNewClientModal}
+        onOpenChange={setShowNewClientModal}
+        onClientSaved={async () => {
+          setShowNewClientModal(false);
+          await fetchCustomers();
+        }}
+      />
     </Dialog>
   )
 }

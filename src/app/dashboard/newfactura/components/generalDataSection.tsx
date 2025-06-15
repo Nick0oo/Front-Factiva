@@ -46,7 +46,60 @@ export function GeneralDataSection({ form }: GeneralDataSectionProps) {
             )}
           />
           
-          {/* Campo de Código de Referencia */}
+          {/* Campo de Método de Pago */}
+          <FormField
+            control={form.control}
+            name="payment_method_code"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="flex items-center gap-2">
+                  <CreditCard className="h-4 w-4" />
+                  Método de Pago
+                </FormLabel>
+                <FormControl>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Selecciona el método de pago" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="10">Efectivo</SelectItem>
+                      <SelectItem value="42">Consignación bancaria</SelectItem>
+                      <SelectItem value="20">Cheque</SelectItem>
+                      <SelectItem value="47">Transferencia bancaria</SelectItem>
+                      <SelectItem value="71">Bonos</SelectItem>
+                      <SelectItem value="72">Cupones</SelectItem>
+                      <SelectItem value="1">Medio de pago no definido</SelectItem>
+                      <SelectItem value="48">Tarjeta Crédito</SelectItem>
+                      <SelectItem value="49">Tarjeta Débito</SelectItem>
+                      <SelectItem value="zzz">Otro</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Campo de Observaciones */}
+          <FormField
+            control={form.control}
+            name="observation"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Observación</FormLabel>
+                <FormControl>
+                  <Textarea 
+                    {...field} 
+                    placeholder="Agrega cualquier nota u observación relevante"
+                    className="min-h-[100px]"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Campo de Código de Referencia solo lectura */}
           <FormField
             control={form.control}
             name="reference_code"
@@ -57,66 +110,13 @@ export function GeneralDataSection({ form }: GeneralDataSectionProps) {
                   Código de Referencia
                 </FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Ej: FAC-2023-001" />
+                  <Input {...field} readOnly />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
         </div>
-
-        {/* Campo de Método de Pago */}
-        <FormField
-          control={form.control}
-          name="payment_method_code"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="flex items-center gap-2">
-                <CreditCard className="h-4 w-4" />
-                Método de Pago
-              </FormLabel>
-              <FormControl>
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Selecciona el método de pago" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="10">Efectivo</SelectItem>
-                    <SelectItem value="42">Consignación bancaria</SelectItem>
-                    <SelectItem value="20">Cheque</SelectItem>
-                    <SelectItem value="47">Transferencia bancaria</SelectItem>
-                    <SelectItem value="71">Bonos</SelectItem>
-                    <SelectItem value="72">Cupones</SelectItem>
-                    <SelectItem value="1">Medio de pago no definido</SelectItem>
-                    <SelectItem value="48">Tarjeta Crédito</SelectItem>
-                    <SelectItem value="49">Tarjeta Débito</SelectItem>
-                    <SelectItem value="zzz">Otro</SelectItem>
-                  </SelectContent>
-                </Select>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Campo de Observaciones */}
-        <FormField
-          control={form.control}
-          name="observation"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Observación</FormLabel>
-              <FormControl>
-                <Textarea 
-                  {...field} 
-                  placeholder="Agrega cualquier nota u observación relevante"
-                  className="min-h-[100px]"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
       </CardContent>
     </Card>
   );

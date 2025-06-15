@@ -52,6 +52,7 @@ interface ProductFormModalProps {
   onClose: () => void;
   onSubmit: (product: any) => void;
   initialData?: Partial<Product>;
+  products?: Product[];
 }
 
 const initialForm: Partial<Product> = {
@@ -62,9 +63,12 @@ const initialForm: Partial<Product> = {
   standard_code_id: 1,
 };
 
-export const ProductFormModal: React.FC<ProductFormModalProps> = ({ open, onClose, onSubmit, initialData }) => {
+export const ProductFormModal: React.FC<ProductFormModalProps> = ({ open, onClose, onSubmit, initialData, products }) => {
   const [form, setForm] = useState<Partial<Product>>(initialForm);
   const [error, setError] = useState<string | null>(null);
+  const [generatingCode, setGeneratingCode] = useState(false);
+
+  const productsSafe = products || [];
 
   useEffect(() => {
     if (open) {
@@ -82,6 +86,19 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({ open, onClos
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  const generateNextCode = () => {
+    const codes = productsSafe
+      .map(p => p.code_reference)
+      .filter(code => /^PRO\d{4}$/.test(code));
+    let max = 0;
+    codes.forEach(code => {
+      const num = parseInt(code.slice(3), 10);
+      if (!isNaN(num) && num > max) max = num;
+    });
+    const nextNum = (max + 1).toString().padStart(4, '0');
+    return `PRO${nextNum}`;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name || !form.price || !form.unit_measure || !form.tribute_id || !form.standard_code_id) {
@@ -89,7 +106,10 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({ open, onClos
       return;
     }
     setError(null);
-    const code_reference = `PRD-${Date.now()}`;
+    let code_reference = form.code_reference;
+    if (!initialData || !initialData.code_reference) {
+      code_reference = generateNextCode();
+    }
     onSubmit({
       ...form,
       code_reference,

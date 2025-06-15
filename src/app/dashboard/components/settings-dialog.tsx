@@ -15,7 +15,8 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { SidebarMenuButton } from "@/components/ui/sidebar"
-import { IconSettings } from "@tabler/icons-react"
+import { IconSettings, IconLock, IconMoonStars } from "@tabler/icons-react"
+import { Separator } from '@/components/ui/separator'
 
 export function SettingsDialog() {
   return (
@@ -29,32 +30,34 @@ export function SettingsDialog() {
 
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Ajustes</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <IconSettings className="h-5 w-5 text-primary" />
+            Ajustes de usuario
+          </DialogTitle>
           <DialogDescription>
             Personaliza tu cuenta y preferencias de la aplicación.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 py-2">
-        <div className="flex items-center justify-between">
-            <span>Tema</span>
+        <div className="space-y-6 py-2">
+          <div className="flex items-center justify-between">
+            <span className="flex items-center gap-2 text-sm font-medium">
+              <IconMoonStars className="h-4 w-4 text-muted-foreground" /> Tema
+            </span>
             <ModeToggle />
           </div>
-          <Button asChild variant="outline" className="w-full">
-            <Link href="/auth/forgot-password">🔑 Cambiar contraseña</Link>
+          <Separator />
+          <Button asChild variant="outline" className="w-full flex items-center gap-2">
+            <Link href="/auth/forgot-password">
+              <IconLock className="h-4 w-4" /> Cambiar contraseña
+            </Link>
           </Button>
-          <Button asChild variant="outline" className="w-full">
-            <Link href="/auth/2fa">🔒 Activar 2FA</Link>
-          </Button>
-
-          
         </div>
 
-        <DialogFooter className="flex justify-end space-x-2">
+        <DialogFooter className="flex justify-end space-x-2 mt-2">
           <DialogClose asChild>
-            <Button variant="outline">Cancelar</Button>
+            <Button variant="outline">Cerrar</Button>
           </DialogClose>
-          <Button>Guardar cambios</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

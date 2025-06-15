@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -32,6 +32,18 @@ export function useInvoiceForm() {
       tribute_id: '',
     },
   });
+
+  // Generar automáticamente el reference_code al montar el formulario
+  useEffect(() => {
+    const fecha = new Date();
+    const yyyy = fecha.getFullYear();
+    const mm = String(fecha.getMonth() + 1).padStart(2, '0');
+    const dd = String(fecha.getDate()).padStart(2, '0');
+    // Simulación: número aleatorio, deberías pedir el correlativo real al backend
+    const n = Math.floor(Math.random() * 1000) + 1;
+    const ref = `FA-${yyyy}${mm}${dd}-${n}`;
+    form.setValue('reference_code', ref);
+  }, []);
 
   return {
     form,
