@@ -53,7 +53,7 @@ export const InvoicesFilters: React.FC<InvoicesFiltersProps> = ({
           aria-label="Filtrar por estado"
         >
           <option value="">Todos</option>
-          <option value="completado">Emitida</option>
+          <option value="completed">Emitida</option>
           <option value="pending">Pendiente</option>
           <option value="cancelled">Anulada</option>
         </select>

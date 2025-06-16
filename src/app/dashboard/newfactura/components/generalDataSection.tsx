@@ -37,7 +37,6 @@ export function GeneralDataSection({ form }: GeneralDataSectionProps) {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="8">Factura Electrónica (FE)</SelectItem>
-                      <SelectItem value="9">Factura de Exportación (FE-E)</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormControl>

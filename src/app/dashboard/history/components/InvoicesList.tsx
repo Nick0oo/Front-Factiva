@@ -1,5 +1,6 @@
 import { Invoice } from '../models/invoice.model';
 import { InvoiceCard } from './InvoiceCard';
+import React from 'react';
 
 interface InvoicesListProps {
   invoices: Invoice[];

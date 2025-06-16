@@ -9,10 +9,12 @@ import { Button } from '@/components/ui/button';
 import api from '@/lib/axios';
 import { jwtDecode } from 'jwt-decode';
 import type { Client } from '@/app/dashboard/clients/models/client.types';
+import { useSidebar } from '@/components/ui/sidebar';
 
 export default function HistoryPage() {
   const { invoices, loading, error } = useInvoicesHistory();
   const router = useRouter();
+  const { open: isSidebarOpen } = useSidebar();
 
   // Estado para clientes
   const [clientes, setClientes] = useState<Client[]>([]);
@@ -74,7 +76,7 @@ export default function HistoryPage() {
   };
 
   return (
-    <div className="p-6">
+    <div className="container py-6">
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-4">
         <h1 className="text-2xl font-bold">Historial de Facturas</h1>
         <Button
@@ -109,7 +111,7 @@ export default function HistoryPage() {
         onView={handleView}
         onDownload={handleDownload}
         getClientNameById={getClientNameById}
-      />
+      />    
     </div>
   );
 } 
