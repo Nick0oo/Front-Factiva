@@ -6,6 +6,7 @@ import { type Customer } from '../models/CustomerModal';
 import { type Item } from '../models/ItemsModal';
 import api from '@/lib/axios';
 import dayjs from 'dayjs';
+import { useNotify } from '@/hooks/useNotify';
 
 export function useInvoiceSubmission(
   form: UseFormReturn<FormValues>,
@@ -16,6 +17,7 @@ export function useInvoiceSubmission(
   options?: { onDraftSaved?: () => void }
 ) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { notifyError, notifyPromise } = useNotify();
 
   const getNextReferenceCode = async () => {
     // Obtener la fecha actual en formato YYYYMMDD
@@ -30,18 +32,18 @@ export function useInvoiceSubmission(
   // Función para crear y enviar la factura (flujo final)
   const handleSubmit = async (data: FormValues) => {
     if (!customer) {
-      alert("Error: Debe seleccionar un cliente para la factura");
+      notifyError("Debe seleccionar un cliente para la factura");
       return;
     }
 
     if (items.length === 0) {
-      alert("Error: Debe agregar al menos un producto o servicio");
+      notifyError("Debe agregar al menos un producto o servicio");
       return;
     }
 
     const missingTaxItems = items.filter((_, index) => !itemTaxes[index]);
     if (missingTaxItems.length > 0) {
-      alert("Error: Todos los productos deben tener un porcentaje de IVA asignado");
+      notifyError("Todos los productos deben tener un porcentaje de IVA asignado");
       return;
     }
 
@@ -81,11 +83,19 @@ export function useInvoiceSubmission(
         total_amount: totalAmount,
       };
 
-      await api.post('/invoice/create', payload);
+      const submissionPromise = api.post('/invoice/create', payload);
+
+      await notifyPromise(
+        submissionPromise,
+        'Enviando factura...',
+        'Factura creada y enviada con éxito.',
+        'Error al crear la factura.'
+      );
+
       router.push('/dashboard/history');
-    } catch (error: any) {
+    } catch (error) {
+      // El error ya es manejado por notifyPromise
       console.error("Error al crear factura:", error);
-      alert(`Error: ${error.response?.data?.message || error.message || "Error al crear la factura"}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -94,12 +104,12 @@ export function useInvoiceSubmission(
   // Función para guardar como borrador
   const handleSaveDraft = async () => {
     if (!customer) {
-      alert("Error: Debe seleccionar un cliente para la factura");
+      notifyError("Debe seleccionar un cliente para la factura");
       return;
     }
 
     if (items.length === 0) {
-      alert("Error: Debe agregar al menos un producto o servicio");
+      notifyError("Debe agregar al menos un producto o servicio");
       return;
     }
     
@@ -138,13 +148,18 @@ export function useInvoiceSubmission(
         is_draft: true
       };
 
-      const response = await api.post('/invoice/create', payload);
-      alert("El borrador se ha guardado correctamente");
-      // Si se provee un callback para cerrar modal, llamarlo
+      const draftPromise = api.post('/invoice/create', payload);
+      
+      await notifyPromise(
+        draftPromise,
+        'Guardando borrador...',
+        'Borrador guardado correctamente.',
+        'Error al guardar el borrador.'
+      );
+      
       if (options?.onDraftSaved) options.onDraftSaved();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error al guardar borrador:", error);
-      alert(`Error: ${error.response?.data?.message || error.message || "Error al guardar el borrador"}`);
     } finally {
       setIsSubmitting(false);
     }

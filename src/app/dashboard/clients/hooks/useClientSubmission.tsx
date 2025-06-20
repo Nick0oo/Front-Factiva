@@ -6,6 +6,7 @@ import { jwtDecode } from 'jwt-decode';
 import { type ClientFormValues } from './useClientForm';
 import { type ClientData } from './useClientData';
 import { type Client } from '../models/client.types';
+import { useNotify } from '@/hooks/useNotify';
 
 // Tipo para el payload del JWT
 interface JwtPayload {
@@ -24,6 +25,7 @@ export function useClientSubmission(
   
   
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { notifySuccess, notifyError } = useNotify();
 
   const handleSubmit = async (formData: ClientFormValues) => {
     
@@ -55,7 +57,7 @@ export function useClientSubmission(
       
       
 
-      alert('Cliente creado con éxito');
+      notifySuccess('Cliente creado con éxito');
       if (onSuccess && response.data) {
         onSuccess(response.data);
       }
@@ -65,7 +67,7 @@ export function useClientSubmission(
       form.reset();
     } catch (error: any) {
       console.error('Error:', error);
-      alert(`Error: ${error.response?.data?.message || 'Error al crear el cliente'}`);
+      notifyError(error.response?.data?.message || 'Error al crear el cliente');
     } finally {
       setIsSubmitting(false);
     }

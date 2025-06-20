@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Product } from '../models/product.model';
 import { jwtDecode } from 'jwt-decode';
+import { useNotify } from '@/hooks/useNotify';
 
 export interface Tribute {
   id: number;
@@ -21,6 +22,7 @@ export function useProducts() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { notifySuccess, notifyError } = useNotify();
 
   // Tributos
   const [tributes, setTributes] = useState<Tribute[]>([]);
@@ -46,7 +48,7 @@ export function useProducts() {
       const data = await res.json();
       setProducts(data);
     } catch (err: any) {
-      setError(err.message);
+      notifyError(err.message || 'Error al obtener los productos');
     } finally {
       setLoading(false);
     }
@@ -65,6 +67,7 @@ export function useProducts() {
       setTributes(data.data || []);
     } catch (err: any) {
       setErrorTributes(err.message);
+      notifyError(err.message || 'Error al obtener los tributos');
     } finally {
       setLoadingTributes(false);
     }
@@ -83,6 +86,7 @@ export function useProducts() {
       setUnitMeasures(data.data || []);
     } catch (err: any) {
       setErrorUnitMeasures(err.message);
+      notifyError(err.message || 'Error al obtener las unidades de medida');
     } finally {
       setLoadingUnitMeasures(false);
     }
@@ -101,14 +105,18 @@ export function useProducts() {
         },
         body: JSON.stringify(product),
       });
-      if (!res.ok) throw new Error('Error al crear producto');
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Error al crear producto');
+      }
+      notifySuccess('Producto creado con éxito');
       await fetchProducts();
     } catch (err: any) {
-      setError(err.message);
+      notifyError(err.message);
     } finally {
       setLoading(false);
     }
-  }, [fetchProducts]);
+  }, [fetchProducts, notifyError, notifySuccess]);
 
   const updateProduct = useCallback(async (id: string, product: Partial<Product>) => {
     setLoading(true);
@@ -123,14 +131,18 @@ export function useProducts() {
         },
         body: JSON.stringify(product),
       });
-      if (!res.ok) throw new Error('Error al actualizar producto');
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Error al actualizar producto');
+      }
+      notifySuccess('Producto actualizado con éxito');
       await fetchProducts();
     } catch (err: any) {
-      setError(err.message);
+      notifyError(err.message);
     } finally {
       setLoading(false);
     }
-  }, [fetchProducts]);
+  }, [fetchProducts, notifyError, notifySuccess]);
 
   const deleteProduct = useCallback(async (id: string) => {
     setLoading(true);
@@ -141,14 +153,18 @@ export function useProducts() {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (!res.ok) throw new Error('Error al eliminar producto');
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message ||'Error al eliminar producto');
+      }
+      notifySuccess('Producto eliminado con éxito');
       await fetchProducts();
     } catch (err: any) {
-      setError(err.message);
+      notifyError(err.message);
     } finally {
       setLoading(false);
     }
-  }, [fetchProducts]);
+  }, [fetchProducts, notifyError, notifySuccess]);
 
   useEffect(() => {
     fetchProducts();

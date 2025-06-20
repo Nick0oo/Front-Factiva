@@ -7,6 +7,9 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { toast } from 'sonner'
+import { useNotify } from "@/hooks/useNotify"
+import { AxiosResponse } from "axios"
+import { Loader2 } from "lucide-react"
 
 interface JWTPayload { sub: string }
 
@@ -38,8 +41,10 @@ const RecentInvoices = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [current, setCurrent] = useState(0)
-  const [isValidating, setIsValidating] = useState(false)
+  const [isValidating, setIsValidating] = useState<string | null>(null)
+  const [isDownloading, setIsDownloading] = useState<string | null>(null)
   const router = useRouter()
+  const { notifyPromise } = useNotify();
 
   useEffect(() => {
     const fetchInvoices = async () => {
@@ -86,49 +91,60 @@ const RecentInvoices = () => {
   const handleNext = () => setCurrent((prev) => (prev === invoices.length - 1 ? 0 : prev + 1))
   const handleViewAll = () => router.push('/dashboard/history')
 
-  const handleDownload = async (invoice: any) => {
+  const handleDownload = async (invoice: Invoice) => {
+    setIsDownloading(invoice._id);
+    const toastId = toast.loading('Descargando PDF...');
     try {
-      // Hacer la petición con el token de autorización
       const response = await api.get(`/factus/download-pdf-base64/${invoice._id}`, {
         responseType: 'blob',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       });
-
-      // Crear URL del blob
+      
       const blob = new Blob([response.data], { type: 'application/pdf' });
       const url = window.URL.createObjectURL(blob);
-      
-      // Abrir en nueva pestaña
       window.open(url, '_blank');
-
-
-      // Limpiar URL del blob
       window.URL.revokeObjectURL(url);
-
-      toast.success('PDF descargado correctamente');
-    } catch (error) {
+      
+      toast.success('PDF listo para abrir.', { id: toastId });
+    } catch (error: any) {
       console.error('Error al descargar el PDF:', error);
       toast.error('Error al descargar el PDF', {
-        description: error instanceof Error ? error.message : 'Error desconocido'
+        id: toastId,
+        description: error?.response?.data?.message || error.message || 'Error desconocido'
       });
+    } finally {
+      setIsDownloading(null);
     }
   };
 
   const handleValidate = async (invoice: Invoice) => {
-    setIsValidating(true);
+    setIsValidating(invoice._id);
+    const toastId = toast.loading('Validando con la DIAN...');
     try {
       await api.post(`/factus/validate/${invoice._id}`);
-      toast.success('Factura enviada y validada correctamente');
-      // Opcional: podrías recargar la lista o actualizar el estado visualmente
+      
+      toast.success('Factura validada y enviada correctamente.', { id: toastId });
+      
+      setInvoices(prevInvoices => 
+        prevInvoices.map(inv => 
+          inv._id === invoice._id ? { ...inv, status: 'enviada' } : inv
+        )
+      );
+      
+      // Opcional: Podríamos iniciar la descarga aquí también si se desea
+      // await new Promise(resolve => setTimeout(resolve, 1000));
+      // await handleDownload(invoice);
+
     } catch (error: any) {
       console.error('Error al enviar la factura:', error);
       toast.error('Error al enviar la factura', {
+        id: toastId,
         description: error?.response?.data?.message || error.message || 'Error desconocido'
       });
     } finally {
-      setIsValidating(false);
+      setIsValidating(null);
     }
   };
 
@@ -187,8 +203,15 @@ const RecentInvoices = () => {
             <div className="text-muted-foreground text-base">Método de pago:</div>
             <div className="font-medium text-lg mb-2">{inv.payment_method_code}</div>
             <div className="flex gap-3 mt-2">
-              <Button size="icon" variant="outline" aria-label="Descargar factura" onClick={() => handleDownload(inv)}><IconDownload size={20} /></Button>
-              {/* Botón de enviar solo si está pendiente */}
+              <Button 
+                size="icon" 
+                variant="outline" 
+                aria-label="Descargar factura" 
+                onClick={() => handleDownload(inv)}
+                disabled={isDownloading === inv._id}
+              >
+                {isDownloading === inv._id ? <Loader2 className="w-4 h-4 animate-spin" /> : <IconDownload size={20} />}
+              </Button>
               {['pending', 'Pendiente'].includes(inv.status) && (
                 <Button
                   size="icon"
@@ -196,10 +219,10 @@ const RecentInvoices = () => {
                   aria-label="Enviar a la DIAN"
                   title="Enviar a la DIAN"
                   onClick={() => handleValidate(inv)}
-                  disabled={isValidating}
+                  disabled={isValidating === inv._id || isDownloading === inv._id}
                   className="hover:bg-blue-600 hover:text-white transition-colors"
                 >
-                  <IconSend size={20} />
+                  {isValidating === inv._id ? <Loader2 className="w-4 h-4 animate-spin" /> : <IconSend size={20} />}
                 </Button>
               )}
             </div>
