@@ -13,10 +13,6 @@ export function useClientData() {
     tribute_id: 21, // No aplica por defecto
   });
 
-  const updateOrganizationType = useCallback((type: number) => {
-    setClientData(prev => ({ ...prev, legal_organization_id: type }));
-  }, []);
-
   const updateDocumentType = useCallback((type: number) => {
     setClientData(prev => ({ ...prev, identification_document_id: type }));
   }, []);
@@ -35,7 +31,6 @@ export function useClientData() {
 
   return {
     clientData,
-    updateOrganizationType,
     updateDocumentType,
     updateTaxType,
     resetClientData,

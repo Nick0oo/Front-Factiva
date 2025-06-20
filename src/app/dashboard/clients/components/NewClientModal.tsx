@@ -9,7 +9,6 @@ import { type Client } from '../models/client.types';
 import api from '@/lib/axios';
 
 // Importar componentes refactorizados
-import { ClientTypeSelector } from '../form-sections/ClientTypeSelector';
 import { IdentificationSection } from '../form-sections/IdentificationSection';
 import { NameSection } from '../form-sections/NameSection';
 import { ContactInfoSection } from '../form-sections/ContactInfoSection';
@@ -28,7 +27,6 @@ export function NewClientModal({ open, onOpenChange, initialData, isEdit, onClie
   const { form } = useClientForm();
   const {
     clientData,
-    updateOrganizationType,
     updateDocumentType,
     updateTaxType,
     resetClientData
@@ -47,8 +45,6 @@ export function NewClientModal({ open, onOpenChange, initialData, isEdit, onClie
       setError(null);
     }
   }, [open, initialData, form, resetClientData]);
-
-  const isCompany = clientData.legal_organization_id === 1;
 
   const onSubmit = async (data: any) => {
     console.log('onSubmit ejecutado', data, clientData);
@@ -92,21 +88,14 @@ export function NewClientModal({ open, onOpenChange, initialData, isEdit, onClie
             className="space-y-6"
           >
             
-            {/* Selectores independientes */}
-            <ClientTypeSelector 
-              clientData={clientData} 
-              updateOrganizationType={updateOrganizationType} 
-            />
-            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <IdentificationSection 
                 clientData={clientData}
                 updateDocumentType={updateDocumentType}
-                isCompany={isCompany}
                 form={form}
               />
               
-              <NameSection form={form} isCompany={isCompany} />
+              <NameSection form={form} />
               
               <TaxInfoSection 
                 clientData={clientData}

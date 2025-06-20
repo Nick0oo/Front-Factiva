@@ -7,9 +7,6 @@ import { z } from 'zod';
 // Esquema SIN los campos que maneja clientData
 const clientSchema = z.object({
   identification: z.string().min(1, 'La identificación es requerida'),
-  dv: z.number().optional(),
-  company: z.string().optional(),
-  trade_name: z.string().optional(),
   names: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
   address: z.string().min(1, 'La dirección es requerida'),
   email: z.string().email('Email inválido'),

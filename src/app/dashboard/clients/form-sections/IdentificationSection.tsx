@@ -9,14 +9,12 @@ import { type ClientData } from '../hooks/useClientData';
 interface IdentificationSectionProps {
   clientData: ClientData;
   updateDocumentType: (type: number) => void;
-  isCompany: boolean;
   form: UseFormReturn<ClientFormValues>;
 }
 
 export function IdentificationSection({ 
   clientData, 
   updateDocumentType, 
-  isCompany, 
   form 
 }: IdentificationSectionProps) {
   return (
@@ -32,63 +30,30 @@ export function IdentificationSection({
             <SelectValue placeholder="Seleccione tipo de documento" />
           </SelectTrigger>
           <SelectContent>
-            {isCompany ? (
-              <SelectItem value="6">NIT</SelectItem> 
-            ) : (
-              <>
-                <SelectItem value="3">Cédula de Ciudadanía</SelectItem>
-                <SelectItem value="5">Cédula de Extranjería</SelectItem>
-                <SelectItem value="7">Pasaporte</SelectItem>
-                <SelectItem value="2">Tarjeta de Identidad</SelectItem>
-                <SelectItem value="1">Registro Civil</SelectItem>
-              </>
-            )}
+            <SelectItem value="3">Cédula de Ciudadanía</SelectItem>
+            <SelectItem value="5">Cédula de Extranjería</SelectItem>
+            <SelectItem value="7">Pasaporte</SelectItem>
+            <SelectItem value="2">Tarjeta de Identidad</SelectItem>
+            <SelectItem value="1">Registro Civil</SelectItem>
           </SelectContent>
         </Select>
       </div>
       
       {/* Número de identificación - USANDO FORM */}
-      <div className="flex gap-3">
-        <div className="flex-grow">
-          <FormField
-            control={form.control}
-            name="identification"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Número de {isCompany ? 'NIT' : 'Documento'}</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        
-        {/* Dígito de verificación (solo para NIT) - USANDO FORM */}
-        {isCompany && (
-          <div className="w-20">
-            <FormField
-              control={form.control}
-              name="dv"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>DV</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="number" 
-                      min={0} 
-                      max={9} 
-                      {...field} 
-                      onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-        )}
+      <div className="flex-grow">
+        <FormField
+          control={form.control}
+          name="identification"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Número de Documento</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
       </div>
     </>
   );
