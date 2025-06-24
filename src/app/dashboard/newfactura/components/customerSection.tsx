@@ -83,7 +83,7 @@ export function CustomerSection({
             </div>
           )}
           
-          {/* Modal de selección de cliente */}
+          {/* Modal de selección de clientee */}
           <CustomerModal 
             open={custOpen} 
             onOpenChange={setCustOpen} 
