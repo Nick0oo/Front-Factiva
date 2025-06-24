@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { resetPassword } from '@/lib/auth'
 import { Eye, EyeOff } from 'lucide-react'
 import clsx from 'clsx'
-import { ResetHeader } from '@/app/Home/reset-header'
+
 
 export default function ResetPasswordPage() {
   const searchParams = useSearchParams()
@@ -69,7 +69,7 @@ export default function ResetPasswordPage() {
 
   return (
     <div>
-      <ResetHeader />
+      
     <section className="relative flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-black overflow-hidden">
       {/* Fondo decorativo */}
       <div
