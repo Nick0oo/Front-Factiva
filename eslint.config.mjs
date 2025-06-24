@@ -13,7 +13,7 @@ const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
 ];
 
-rules = {
+const rules = {
   '@typescript-eslint/no-explicit-any': 'off' // 👈 Permite el uso de "any"
 }
 export default eslintConfig;

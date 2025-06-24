@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import React from 'react'
 import { cn } from '@/lib/utils'
 
-const menuItems = []
+const menuItems:string [] = []
 
 export const ForgotHeader = () => {
     const [menuState, setMenuState] = React.useState(false)
