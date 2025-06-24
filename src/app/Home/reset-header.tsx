@@ -1,0 +1,1 @@
+const menuItems: { name: string; href: string }[] = [] 

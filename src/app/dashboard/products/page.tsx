@@ -71,12 +71,6 @@ const ProductsPage = () => {
         }}
         onSubmit={handleSubmit}
         initialData={editProduct || undefined}
-        tributes={tributes}
-        loadingTributes={loadingTributes}
-        errorTributes={errorTributes}
-        unitMeasures={unitMeasures}
-        loadingUnitMeasures={loadingUnitMeasures}
-        errorUnitMeasures={errorUnitMeasures}
       />
     </div>
   );

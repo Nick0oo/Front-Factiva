@@ -217,7 +217,15 @@ export function ItemsModal({ open, onOpenChange, onAdd }: ItemsModalProps) {
           setShowNewProductModal(false);
           await fetchProducts();
         }}
-        products={items}
+        products={items.map(item => ({
+          _id: item.id,
+          code_reference: item.code_reference,
+          name: item.name,
+          price: item.price,
+          unit_measure: item.unit_measure ?? '',
+          tribute_id: '', // Valor por defecto, ajusta según lógica de negocio
+          standard_code_id: item.standard_code_id ?? '',
+        }))}
       />
     </Dialog>
   )

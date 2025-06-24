@@ -59,7 +59,7 @@ export function ProductsSection({
           <ItemsModal
             open={itemsOpen}
             onOpenChange={setItemsOpen}
-            onAdd={item => setItems(prev => [...prev, item])}
+            onAdd={item => setItems([...items, item])}
           />
         </div>
       </CardContent>
