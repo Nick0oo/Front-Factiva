@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
-import { ForgotHeader } from '@/app/Home/forgot-header'
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
