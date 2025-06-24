@@ -41,7 +41,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <div>
-    <ForgotHeader />
+    
     <section className="relative flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-black overflow-hidden">
 
       {/* Fondo decorativo */}
